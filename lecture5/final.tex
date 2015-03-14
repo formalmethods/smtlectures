@@ -1,0 +1,78 @@
+\begin{frame}
+  \frametitle{Final Remarks}
+
+  We did not say how to handle negative \tatoms, such as $\neg( x - y \leq c )$.
+  However it is easy to see that  $\quad\neg( x - y \leq c )\quad$ iff $\quad y  - x \leq - c - 1\quad$
+  \vfill
+  Each \tatom is associated to two edges $(x,y;c), (y,x;-c-1)$. However
+  at most only one of the two is activated (depending if \tatom is pushed positively or
+  negatively)
+  \vfill
+  \pause
+  Simple bounds, such as $\quad x \leq c\quad$ or $\quad - x \leq c\quad$ can also be handled. It is
+  sufficient to add a ``fake'' (and fresh) variable $Z$ (stands for ``zero''),
+  and use $\quad x - Z \leq c\quad$ and $\quad Z - x \leq c\quad$ instead of the above
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Floyd-Warshall}
+
+  Another algorithm that can be used instead of BF is the
+  Floyd-Warshall
+  \vfill
+  FW has a complexity of $\theta(n^3)$, while BF of $O(nm)$
+  (variations of BF have complexity $O(m + n \log n)$)
+  \vfill
+  FW however is useful as it is trivial to compute all
+  theory propagations. In BF, theory propagations are tricky
+  to discover
+  \vfill
+  FW is independent of $m$, the numeber of edges. FW is good
+  for {\bf dense} problems, while is likely to be bad for
+  {\bf sparse} ones
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exercizes}
+
+  \begin{enumerate}
+
+    \item Prove that adding $\{ (I,x_1;0), \ldots, (I,x_n;0) \}$ to a graph
+          free of negative cycles, does not introduce any negative cycle
+
+    \vfill
+
+    \item Let $G(V,E)$ be a graph, let $x,y \in V$, and suppose that
+          a path $y \rightarrow \ldots \rightarrow x$ exists in $G$.
+	  Are the following true or false ? (if false, show counterexamples)
+
+    \vfill
+
+    \begin{enumerate}[$(a)$]
+
+      \item Adding an edge $(x,y;100)$ to $G$ never causes the creation of a negative cycle 
+
+      \item Adding an edge $(x,y;-100)$ to $G$ always causes the creation of a negative cycle 
+
+    \end{enumerate}
+
+    \vfill
+
+    \item Let $\babst{\mu}$ be a set of constraints of the form $x - y \leq c$. Let
+          $\mu$ be a model. Let $\zeta(x) = \{ \mu(x) + \epsilon \}$, 
+	  for some $\epsilon \in \mathbb{Z}$. Show that $\zeta$  is also a model
+
+    \vfill
+
+    \item Show that conflicts returned discovered with checkNegativeCycle
+          are always minimal
+
+    \vfill
+
+    \item Prove Observation 2 using Farka's Lemma
+
+  \end{enumerate}
+
+\end{frame}

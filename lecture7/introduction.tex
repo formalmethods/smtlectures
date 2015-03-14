@@ -1,0 +1,70 @@
+\begin{frame}
+  \frametitle{Introduction}
+
+  Recall from the first lecture: 
+  \vfill
+  In SMT a theory \T is defined over a {\bf signature} $\Sigma$, which
+  is a set of function and predicate symbols.
+  The equality symbol $=$ is assumed to be included in every signature.
+  \vfill
+  The signature of \Uf can include infinite functional and predicate
+  symbols 
+  $\Sigma = \{ f, g, h, \ldots, p, q, \ldots \}$, which can be used
+  as usual to build \tterms using variables
+  \vfill
+  Examples: 
+  $$x = f(g(y), z)\quad\quad\quad p( x, g( x ) )\quad\quad\quad g( y ) \not= g( z )$$
+  \vfill
+  \Uf is the so-called {\bf empty} theory as it does not contain 
+  any ``explicit'' axiom 
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Introduction}
+
+  Still, there is equality $=$. So the following logic rules must be
+  respected by any satisfiable \Uf-formula\footnote{Notice that for \Idl and \Lra this was implicitly true.}
+  \vfill
+  \begin{columns}
+
+  \begin{column}{.3\textwidth}
+  \begin{prooftree}
+    \def\extraVskip{5pt}
+    \AxiomC{}
+    \RightLabel{\scriptsize (refl.)}
+    \UnaryInfC{$s=s$}
+  \end{prooftree}
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{prooftree}
+    \def\extraVskip{5pt}
+    \AxiomC{$s=t$}
+    \RightLabel{\scriptsize (symm.)}
+    \UnaryInfC{$t=s$}
+  \end{prooftree}
+  \end{column}
+
+  \begin{column}{.4\textwidth}
+  \begin{prooftree}
+    \def\extraVskip{5pt}
+    \AxiomC{$s=t \wedge t=r$}
+    \RightLabel{\scriptsize (tran.)}
+    \UnaryInfC{$s=r$}
+  \end{prooftree}
+  \end{column}
+
+  \end{columns}
+  \vfill
+  for all \Uf-terms $s,t,r$ 
+  \vfill\pause
+  Moreover, there is a further condition that has to hold
+  \begin{prooftree}
+    \def\extraVskip{5pt}
+    \AxiomC{$s_1=t_1 \wedge \ldots \wedge s_n=t_n$}
+    \RightLabel{\scriptsize (cong.)}
+    \UnaryInfC{$f(s_1,\ldots,s_n)=f(t_1,\ldots,t_n)$}
+  \end{prooftree}
+
+\end{frame}

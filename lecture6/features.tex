@@ -1,0 +1,127 @@
+\subsection{\tsolver features}
+
+\begin{frame}
+  \frametitle{\tsolver features}
+
+\begin{itemize}
+
+\item Incrementality: it comes for free, as we keep $\mu$ updated
+
+\vfill\pause
+
+\item Backtrackability: use the same trick as for BF: update
+      a model $\mu'$, if satisfiable set $\mu = \mu'$, otherwise
+      forget $\mu'$. When backtracking don't change $\mu$
+
+\vfill\pause
+
+\item Minimal \tconflicts: seen already
+
+\vfill\pause
+
+\item Theory Propagation:
+
+  \begin{itemize}
+
+    \item Bound propagation (cheap): if $x \leq c$ has been
+	  asserted, then all other inactive $x \leq c'$ with
+	  $c \leq c'$ are implied (similar for $\geq$)
+
+\vfill\pause
+
+    \item Tableau+Bound propagation: use a row
+          $x_1 = a_2 x_2 + a_3 x_3 + \ldots$
+	  and bounds on $x_2, x_3, \ldots$ to
+	  derive bounds on $x_1$ (similar idea as to find conflicts)
+
+  \end{itemize}
+
+\end{itemize}
+
+\end{frame}
+
+\subsection{Strict inequalities}
+
+\begin{frame}
+  \frametitle{Strict inequalities}
+
+  So far we have used bounds like $x \leq 3$, but never strict ones like $x < 3$
+  \vfill\pause
+  Since we are on the rationals $x < 3$ is same as $x \leq (3 - \delta)$,
+  where $\delta$ is a symbolic positive parameter ($\delta > 0$) 
+  \vfill\pause
+  We do the following: instead of using $\Rat$ numbers of form $n$, we use $\Rat_\delta$ numbers of form $(n, k)$
+  to be intended as $n + k\delta$
+  \vfill\pause
+  Addition in $\Rat_\delta$: $(n_1, k_1) + (n_2, k_2) = (n_1+n_2, k_1+k_2)$
+  \vfill\pause
+  Scalar multiplication in $\Rat_\delta$: $c(n, k) = (cn, ck)$
+  \vfill\pause
+  Comparison in $\Rat_\delta$: $(n_1, k_1) \leq (n_2, k_2)$ iff  ($n_1 < n_2$) or ($n_1 = n_2$ and $k_1 \leq k_2$)
+  \vfill\pause
+  If constraints are satisfiable, it is always possible to compute a rational 
+  value for $\delta$ to translate $\Rat_\delta$ numbers into $\Rat$ numbers
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Strict inequalities}
+
+  \scriptsize
+
+  Example: situation after receiving \\ 
+  $x_3 < -2$, $x_4 > 0$ \\
+  and after $Update(x_3,(-2,-1))$, $Update(x_4,(0,1))$
+
+  \vfill
+
+  \begin{columns}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  Tableau
+  \end{center}
+  $$
+  \begin{array}{rcl}
+    x_1 & = & - x_3 + x_4  \\ 
+    x_2 & = &   x_3 + x_4  \\ 
+    \\
+    \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.4\textwidth}
+  \begin{center}
+  $lb$~~~~~~~Bounds~~~~~~~$ub$
+  \end{center}
+  $$
+  \begin{array}{rcccl}
+      - \infty  & \leq & x_1 & \leq & \infty \\
+      - \infty  & \leq & x_2 & \leq & \infty \\
+      - \infty  & \leq & x_3 & \leq & (-2,-1) \\
+          (0,1) & \leq & x_4 & \leq & \infty
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $\mu$
+  \end{center}
+  $$
+  \begin{array}{rcl}
+  x_1 & \mapsto &   (2,2) \\
+  x_2 & \mapsto &  (-2,0) \\
+  x_3 & \mapsto & (-2,-1) \\
+  x_4 & \mapsto &   (0,1) 
+  \end{array}
+  $$
+  \end{column}
+
+  \end{columns}
+  \vfill
+  $x_1 = - (-2,-1) + (0,1) = (2,1) + (0,1) = (2,2)$ \\
+  $x_2 =   (-2,-1) + (0,1) = (-2,0)$ 
+
+\end{frame}

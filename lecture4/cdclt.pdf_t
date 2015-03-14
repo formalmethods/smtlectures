@@ -1,0 +1,33 @@
+\begin{picture}(0,0)%
+\includegraphics{cdclt.pdf}%
+\end{picture}%
+\setlength{\unitlength}{4144sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(11146,6414)(1179,-5563)
+\put(11386,-601){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}SAT}%
+}}}}
+\put(5851,-601){\makebox(0,0)[b]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}{\sc BCP}}%
+}}}}
+\put(9001,-601){\makebox(0,0)[b]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}{\sc Decision}}%
+}}}}
+\put(5851,-3211){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}{\sc AnalyzeConflict}}%
+}}}}
+\put(11341,-1951){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}UNSAT}%
+}}}}
+\put(9001,-3256){\makebox(0,0)[b]{\smash{{\SetFigFont{17}{20.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}{\sc AddClause}}%
+}}}}
+\put(5851,-5056){\makebox(0,0)[b]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}{\sc BacktrackTo}}%
+}}}}
+\put(2701,-601){\makebox(0,0)[b]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}{\sc Theory.Check}}%
+}}}}
+\put(2701,-3121){\makebox(0,0)[b]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}{\sc Theory}}%
+}}}}
+\put(2701,-3391){\makebox(0,0)[b]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}.{\sc Propagate}}%
+}}}}
+\end{picture}%

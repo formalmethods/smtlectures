@@ -1,0 +1,34 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{nonvertex} = [circle,draw=white,fill=white,thick,color=white]
+\tikzstyle{vertex} = [circle,draw=oproverblue!80,fill=oproverblue!20,thick]
+\tikzstyle{edge}   = [->,>=stealth,semithick]
+\tikzstyle{edge0}  = [->,>=stealth,semithick,draw=grey]
+\tikzstyle{weight} = [color=oproveryellow]
+\tikzstyle{hlvertex} = [circle,draw=mydarkgreen!60,fill=mydarkgreen!20,thick]
+
+\node[hlvertex] (x) at (  1, 0)     {$\idlnode{x}{0}$};
+\node[vertex] (y) at (3.5, 0)     {$\idlnode{y}{0}$};
+\node[vertex] (z) at ( 4,-1.25)   {$\idlnode{z}{0}$};
+\node[vertex] (w) at (3.5,-2.5)   {$\idlnode{w}{0}$};
+\node[vertex] (t) at (  1,-2.5)   {$\idlnode{t}{0}$};
+\node[vertex] (I) at (  0, -1.25) {$\idlnode{I}{0}$};
+
+\draw[edge0] (I) -- (x);
+\draw[edge0] (I) -- (y);
+\draw[edge0] (I) -- (z);
+\draw[edge0] (I) -- (w);
+\draw[edge0] (I) -- (t);
+
+\draw[edge] (x) -- node[weight] {$8$}   (y);
+\draw[edge] (y) -- node[weight] {$-1$}  (z);
+\draw[edge] (z) -- node[weight] {$-6$}  (x);
+\draw[edge] (z) -- node[weight] {$2$}   (w);
+\draw[edge] (w) -- node[weight] {$-9$}  (x);
+\draw[edge] (w) -- node[weight] {$0$}   (t);
+\draw[edge] (t) -- node[weight] {$3$}   (x);
+
+\end{tikzpicture}

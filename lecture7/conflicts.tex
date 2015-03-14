@@ -1,0 +1,73 @@
+\begin{frame}
+  \frametitle{Computing \tconflicts}
+
+  \scriptsize
+
+  First of all notice that \tconflicts are always of the form
+  $$
+    \{\ s \not= t, \mbox{``other equalities that cause } s \mbox{ and } t \mbox{ to join the same class''} \} 
+  $$
+  We reconstruct the conflict by storing the reason that caused two classes to collapse. When a
+  $s \not=t $ causes $unsat$, we call a routine Explain($s$,$t$) that collects all the reasons
+  that made $s$ equal to $t$ \\
+  Example 
+  $$
+  \{\ \coloneat{x\!=\!y}{2}
+   ,\ \coloneat{y\!=\!w}{3}
+   ,\ \coloneat{f(x)\!=\!z}{5}
+   ,\ \coloneat{f(w)\!=\!a}{6}
+   ,\ \coloneat{a\!\not=\!z}{7-}\ \}
+  $$
+  \begin{overlayarea}{\textwidth}{3cm}
+    \begin{center}
+    \only<1|handout:0>{\input{confl}}
+    \only<2|handout:0>{\input{confl_1}}
+    \only<3|handout:0>{\input{confl_2}}
+    \only<4|handout:0>{\input{confl_3}}
+    \only<5|handout:0>{\input{confl_4}}
+    \only<6->{\input{confl_5}}
+    \end{center}
+  \end{overlayarea}
+  \vfill
+  \onslide<7->{
+  On processing $a\not=z$, we call Explain( $a$, $z$ )
+  }
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Computing \tconflicts}
+
+  \scriptsize
+
+  $$
+  \{\ x\!=\!y
+   ,\ y\!=\!w
+   ,\ f(x)\!=\!z
+   ,\ f(w)\!=\!a
+   ,\ a\!\not=\!z\ 
+  \}
+  $$
+  \begin{center}
+  \input{confl_6}
+  \end{center}
+  \vfill
+  If $a$ and $z$ are in the same class, it means that there are paths of the form
+  $$a \rightarrow^* u\quad\quad z \rightarrow^* u$$ 
+  (it could happen that $u \equiv a$ or $u \equiv z$)
+  \vfill\pause
+  Explain( $s$, $t$ ) intuitively works as follows:
+  \begin{enumerate}
+    \item Traverse $s \rightarrow^* u$ and collect all labels on edges
+    \item Traverse $t \rightarrow^* u$ and collect all labels on edges
+    \item If during collection an empty label was found
+    \begin{enumerate}
+      \scriptsize
+      \item It must be some $f(s_1,\ldots,s_n) \rightarrow f(t_1,\ldots,t_n)$
+      \item call Explain( $s_i$, $t_i$ ) for $i \in [1..n]$
+    \end{enumerate}
+    \item At the end of the recursions, the collected labels (without repetitions)
+          are a \tconflict
+  \end{enumerate}
+
+\end{frame}

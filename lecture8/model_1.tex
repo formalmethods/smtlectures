@@ -1,0 +1,18 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{state} = [rectangle,draw=oproverblue!60,fill=oproverblue!20,thick]
+\tikzstyle{initialstate} = [rectangle,draw=mydarkgreen!80,fill=mydarkgreen!40,thick]
+
+\node[initialstate] (000) at (  0,  -1)  {$\nodd{door=open}{engine=off}{tray=empty}$};
+\node[state] (100) at ( -4, -2)  {$\nodd{door=closed}{engine=off}{tray=empty}$};
+\node[state] (001) at (  4, -2)  {$\nodd{door=open}{engine=off}{tray=full}$};
+\node[state] (101) at ( -2, -4)  {$\nodd{door=closed}{engine=off}{tray=full}$};
+\node[state] (110) at (  2, -4)  {$\nodd{door=closed}{engine=on}{tray=empty}$};
+\node[state] (011) at (  3, -6)  {$\nodd{door=open}{engine=on}{tray=full}$};
+\node[state] (010) at (  0, -6)  {$\nodd{door=open}{engine=on}{tray=empty}$};
+\node[state] (111) at ( -3, -6)  {$\nodd{door=closed}{engine=on}{tray=full}$};
+
+\end{tikzpicture}

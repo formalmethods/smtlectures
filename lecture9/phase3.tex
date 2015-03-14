@@ -1,0 +1,386 @@
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Playing with the Enodes}
+
+  \scriptsize
+
+  The \verb|Enode| is the data structure that stores any
+  term and formula
+  \vfill
+  There are three kinds of Enode
+  \vfill
+  \begin{columns}
+
+    \begin{column}{.2\textwidth}
+      \begin{center}
+      Symbol
+      \bigskip\\
+      \input{enode_1} 
+      \end{center}
+    \end{column}
+
+    \begin{column}{.3\textwidth}
+      \begin{center}
+      Term
+      \bigskip\\
+      \input{enode_2} 
+      \end{center}
+    \end{column}
+
+    \begin{column}{.45\textwidth}
+      \begin{center}
+      List
+      \bigskip\\
+      \input{enode_3} 
+      \end{center}
+    \end{column}
+
+  \end{columns}
+
+  \vfill\pause
+
+  \begin{columns}
+
+    \begin{column}{.5\textwidth}
+      E.g. the term $x \leq y$ is represented as
+      \bigskip\\
+      If \verb|e| is the Enode for $x \leq y$, we retrieve
+      the Enode for \verb|x| with\\
+      \verb|Enode * lhs = e->get1st( )|
+      \medskip\\
+      and the Enode for \verb|y| with\\
+      \verb|Enode * rhs = e->get2nd( )|
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+
+      \begin{center}
+        \scalebox{.7}{\input{enode_4}}
+      \end{center}
+
+    \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Playing with the Enodes}
+
+  The polarity of an Enode can be retrieved with
+  \begin{center}
+  \verb|lbool sign = e->getPolarity( );|
+  \end{center}
+  and it could be \verb|l_True| or \verb|l_False|
+  \vfill
+  An Enode \verb|e| can be simply printed with
+  \begin{center}
+  \verb|cerr << "printing enode: " << e << endl;|
+  \end{center}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+
+  A set of constraints is unsatisfiable iff there is a cycle 
+  $$x \leq y,\ y \leq z,\ \ldots,\ w \leq x$$  
+  \vfill
+  A model is therefore is any ``acyclic'' set of constraints
+  \vfill
+
+  \begin{columns}
+
+    \begin{column}{.3\textwidth}
+
+      \begin{overlayarea}{.3\textwidth}{40pt}
+
+	$x \leq y$ \\
+	$y \leq z$ \\
+	$z \leq x$
+
+      \end{overlayarea}
+      
+    \end{column}
+    
+    \begin{column}{.4\textwidth}
+
+      \begin{overlayarea}{.4\textwidth}{40pt}
+      \input{unsat_1}
+      \end{overlayarea}
+      
+    \end{column}
+
+    \begin{column}{.2\textwidth}
+
+      unsat
+
+    \end{column}
+
+  \end{columns}
+
+  \vfill
+  Therefore we need to
+
+  \begin{enumerate}
+
+    \item Represent the graph from the received constraints
+
+    \item Check if the graph contains a cycle
+
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Representing the graph}
+
+  We represent the graph with {\bf adjacency lists}, i.e., every node (variable) is
+  assigned to a list of outgoing edges
+  \vfill
+  We use STL to make the following data structure
+  \begin{verbatim}
+    map< Enode *, vector< Enode * > > adj_list;
+  \end{verbatim}
+  that we declare as private attribute in \verb|SOSolver.h|, so that
+  it will be accessible everywhere in the class
+  \vfill
+  When we receive a new constraint with \verb|assertLit|, we update
+  \verb|adj_list| with 
+  \begin{verbatim}
+    adj_list[ from ].push_back( e );
+  \end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Checking for a cycle}
+
+  \scriptsize
+
+  When \verb|check| is called we have to see if there is a cycle in the current graph
+  \vfill
+  We use a simple depth-first search using the following high-level recursive function:
+  \vfill
+  \begin{tabbing}
+  sd \= sd \= sd \= asd \kill
+  \> Input: a node ``from'' \\
+  \> Output: $true$ iff a cycle containing ``from'' is found \\
+  \> \\
+  1 \> function findCycle( Enode * from ) \\
+  \\
+  2 \> \> if ( ``from was seen before'' ) return $true$ \\ 
+  \\
+  3 \> \> for each ``from $\leq$ y'' in adj\_list of from \\ 
+  4 \> \> \> res = findCycle( y ) \\
+  5 \> \> \> if ( res == $true$ ) return $true$ \\
+  \\
+  6 \> \> return $false$
+  \end{tabbing}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Checking for a cycle}
+
+  \scriptsize
+
+  In SOSolver.C
+
+  \begin{verbatim}
+  ...
+  bool SOSolver::findCycle( Enode * from )
+  {
+    if ( seen.find( from ) != seen.end( ) )
+      return true;
+    
+    seen.insert( from );
+    vector< Enode * > & adj_list_from = adj_list[ from ];
+    
+    for ( size_t i = 0 ; i < adj_list_from.size( ) ; i ++ )
+    {
+      const bool cycle_found = findCycle( adj_list_from[ i ]->get2nd( ) );
+      if ( cycle_found ) 
+        return true;
+    }
+    
+    seen.erase( from );
+    return false;
+  }
+  ...
+  \end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Checking for a cycle}
+
+  \scriptsize
+
+  In SOSolver.C
+
+  \begin{verbatim}
+  bool SOSolver::check( bool complete )    
+  { 
+    for ( map< Enode *, vector< Enode * > >::iterator it = adj_list.begin( )
+        ; it != adj_list.end( )
+        ; it ++ )
+    {
+      seen.clear( );
+    
+      Enode * from = it->first;
+      const bool cycle_found = findCycle( from ); 
+    
+      if ( cycle_found )
+        return false;
+    }
+    
+    return true;
+  }
+  \end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Checking for a cycle}
+
+  In SOSolver.h
+
+  \begin{verbatim}
+  private:
+
+    bool findCycle ( Enode * );
+   
+    map< Enode *, vector< Enode * > > adj_list;
+    set< Enode * > seen;
+  \end{verbatim}
+
+  We can try to compile, and test it with files 
+  so\_example\_1.smt2 and so\_example\_2.smt2
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Computing conflicts}
+
+  \scriptsize
+
+  Conflicts can be computed by keeping track of
+  the edges that form the last cycle detected 
+  \vfill
+  We add a \verb|map< Enode *, Enode * > parent_edge|
+  map which we use to store the edge used to reach
+  a node in the depth-serch traversal
+  \vfill
+  When during findCycle we discover an already visited
+  node, we backward visit the parent\_edge relation
+  to retrieve the cycle
+  \vfill
+  \begin{verbatim}
+  void SOSolver::computeExplanation( Enode * from )
+  {
+    assert( explanation.empty( ) );
+    Enode * x = from;
+    do
+    {
+      x = parent_edge[ x ]->get1st( );
+      explanation.push_back( parent_edge[ x ] );
+    }
+    while( x != from );
+  }
+  \end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Computing conflicts}
+
+  \scriptsize
+
+  Again in SOSolver.C
+
+  \begin{verbatim}
+  void SOSolver::findCycle( Enode * from )
+  {
+    if ( seen.find( from ) != seen.end( ) )
+    {
+      computeExplanation( from );
+      return true;
+    }
+    ...
+  }
+  \end{verbatim}
+
+  \vfill
+  Again in SOSolver.h
+
+  \begin{verbatim}
+    map< Enode *, Enode * > parent_edge;
+  \end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Incrementality - Backtrackability}
+
+  Last thing we need is to handle incrementality/backtrackability
+  \vfill
+  For simplicity, solving will not be incremental nor backtrackable in this lecture
+  \vfill
+  However we still have to keep \verb|adj_list| updated with constraints received/dropped
+  \vfill
+  For this aim we introduce two more vectors in SOSolver.h
+
+  \begin{verbatim}
+  vector< Enode * > used_constr;
+  vector< size_t >  backtrack_points;
+  \end{verbatim}
+
+  \verb|used_constr| keeps track of the order of constraints received,
+  while \verb|backtrack_points| keeps track of the {\bf size} of 
+  \verb|used_constr| when a new backtrack point is requested
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 3 - Implementing the solver}
+  \framesubtitle{Incrementality - Backtrackability}
+
+  \scriptsize
+
+  \begin{verbatim}
+  void SOSolver::pushBacktrackPoint ( )
+  {
+    backtrack_points.push_back( used_constr.size( ) );
+  }
+  \end{verbatim}
+
+  \begin{verbatim}
+  void SOSolver::popBacktrackPoint ( )
+  {
+    assert( !backtrack_points.empty( ) );
+    const size_t new_size = backtrack_points.back( );
+    backtrack_points.pop_back( );
+    
+    while ( new_size < used_constr.size( ) )
+    {
+      Enode * e = used_constr.back( );
+      Enode * from = e->get1st( );
+      Enode * to   = e->get2nd( );
+      assert( adj_list[ from ].back( ) == e );
+      adj_list[ from ].pop_back( );
+      used_constr.pop_back( );
+    }
+  }
+  \end{verbatim}
+
+\end{frame}

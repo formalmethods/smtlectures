@@ -1,0 +1,160 @@
+\section{Lecture 6 - A \tsolver for \Lra}
+
+\begin{frame}
+  \frametitle{A \tsolver for \Lra}
+
+  \scriptsize
+
+  \begin{columns}
+
+  \begin{column}{.4\textwidth}
+  \begin{center}
+  Tableau
+  \end{center}
+  $$
+  \begin{array}{rcl}
+    & \ldots \\                             
+    x_1 & = & 3 x_2 - 4 x_3 + 2 x_4 - x_5 \\ 
+    & \ldots \\                             
+    \\
+    \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $lb$~~~~~~~Bounds~~~~~~~$ub$
+  \end{center}
+  $$
+  \begin{array}{rcccl}
+     -4 & \leq & x_1 & \leq & 10 \\
+      1 & \leq & x_2 & \leq & 3 \\
+     -4 & \leq & x_3 & \leq & -1 \\
+      1 & \leq & x_4 & \leq & 2 \\
+     -1 & \leq & x_5 & \leq & 10 \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $\mu$
+  \end{center}
+  $$
+  \begin{array}{rcl}
+  x_1 & \mapsto & \colone{12} \\
+  x_2 & \mapsto & 1 \\
+  x_3 & \mapsto & -1 \\
+  x_4 & \mapsto & 2 \\
+  x_5 & \mapsto & -1 
+  \end{array}
+  $$
+  \end{column}
+
+  \end{columns}
+  \vfill
+  which among $\nonbas = \{ x_2, x_3, x_4 \}$ do I choose for pivoting ? Clearly, the value of $\mu(x_1)$
+  is too high, I have to decrease it by playing with the values of \nonbas: 
+  \begin{itemize}
+    \item $  3 x_2$ cannot decrease, as $\mu(x_2) = lb(x_2)$ and cannot be moved down
+    \item $- 4 x_3$ cannot decrease, as $\mu(x_3) = ub(x_3)$ and cannot be moved up
+    \item $  2 x_4$ can decrease, as  $\mu(x_4) = ub(x_4)$, and can be moved down
+    \item $-   x_5$ can decrease, as  $\mu(x_5) = lb(x_5)$, and can be moved up
+  \end{itemize}
+  \vfill
+  both $x_4$ and $x_5$ are therefore good candidates for pivoting. To avoid loops, 
+  choose variable with smallest subscript (Bland's Rule). This rule is not necessarily
+  efficient, though
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{A \tsolver for \Lra}
+
+  \scriptsize
+
+  There might be cases in which {\bf no suitable variable for pivoting can be found}.
+  This indicates unsatisfiability. Consider the following where we have just asserted $x_1 \leq 9$
+  \vfill
+  \begin{columns}
+
+  \begin{column}{.4\textwidth}
+  \begin{center}
+  Tableau
+  \end{center}
+  $$
+  \begin{array}{rcl}
+    & \ldots \\                             
+    x_1 & = & 3 x_2 - 4 x_3 + 2 x_4 - x_5 \\ 
+    & \ldots \\                             
+    \\
+    \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $lb$~~~~~~~Bounds~~~~~~~$ub$
+  \end{center}
+  $$
+  \begin{array}{rcccl}
+     -4 & \leq & x_1 & \leq & 9 \\
+      1 & \leq & x_2 & \leq & 3 \\
+     -4 & \leq & x_3 & \leq & -1 \\
+      2 & \leq & x_4 & \leq & 2 \\
+     -1 & \leq & x_5 & \leq & -1 \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $\mu$
+  \end{center}
+  $$
+  \begin{array}{rcl}
+  x_1 & \mapsto & \colone{12} \\
+  x_2 & \mapsto & 1 \\
+  x_3 & \mapsto & -1 \\
+  x_4 & \mapsto & 2 \\
+  x_5 & \mapsto & -1 
+  \end{array}
+  $$
+  \end{column}
+
+  \end{columns}
+  \vfill
+  no variable among $\nonbas = \{ x_2, x_3, x_4 \}$ can be chosen for pivoting. This is because (due to tableau)
+  $$x_2 \geq 1\ \swedge\ x_3 \leq -1\ \swedge\ x_4 \geq 4\ \swedge\ x_5 \leq -1\ \ \Rightarrow\ \ x_1 \geq 12\ \ \Rightarrow\ \ \neg (x_1 \leq 9)$$
+  \vfill
+  Therefore
+  $$\{ x_2 \geq 1,\ x_3 \leq -1,\ x_4 \geq 4,\ x_5 \leq -1,\ \neg( x_1 \leq 9 ) \}$$
+  is a \tconflict (modulo the row $x_1 = 3 x_2 - 4 x_3 + 2 x_4 - x_5$)
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lecture 6 - Exercize 1}
+
+  A conflict returned by the Simplex involves a row
+  $$
+  x_1 = a_2 x_2 + \ldots + a_n x_n 
+  $$
+  and exactly $n$ bounds
+  $$
+  \{ x_1 \sim_1 b_1, x_2 \sim_2 b_2, \ldots, x_n \sim_n b_n \} 
+  $$
+  with $\sim_i\ \in \{ \leq, \geq \}$.
+
+  This conflict is minimal: we show that we can find a model $\mu$ if we remove a bound.
+  W.l.o.g., we remove $x_2 \sim_2 b_2$: then we can set $\mu(x_j) = b_j$ for $j\not=2$.
+  Then we can pivot the row
+  $$
+  x_2 = c_1 x_1 + c_3 x_3 + \ldots + c_n x_n 
+  $$
+  and compute a suitable value for $\mu(x_2) = c_1 \mu(x_1) + \ldots + c_n \mu(x_n)$.\\
+  (we can set the value we want to $\mu(x_2)$ because it is unbounded now!)
+
+\end{frame}

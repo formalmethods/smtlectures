@@ -1,0 +1,56 @@
+\begin{frame}
+  \frametitle{A simple logic}
+
+  For this tutorial we use a theory that we call ``simple order'' (\So)
+  \vfill
+  Atoms of this theory are of the form
+  $$
+    x \leq y
+  $$
+  but $\leq$ it is just a symbol to intend ``$x$ is before $y$''
+  \vfill
+  A set of constraints is unsatisfiable iff there is a cycle 
+  $$x \leq y,\ y \leq z,\ \ldots,\ w \leq x$$  
+  \vfill
+  A model is therefore is any ``acyclic'' set of constraints
+  \vfill
+
+  \begin{columns}
+
+    \begin{column}{.3\textwidth}
+
+      \begin{overlayarea}{.3\textwidth}{40pt}
+
+	\only<1|handout:0>{
+	$x \leq y$ \\
+	$y \leq z$ \\
+	$z \leq x$
+	}
+	\only<2>{
+	$x \leq y$ \\
+	$y \leq z$ \\
+	$x \leq z$
+	}
+
+      \end{overlayarea}
+      
+    \end{column}
+    
+    \begin{column}{.4\textwidth}
+
+      \begin{overlayarea}{.4\textwidth}{40pt}
+      \only<1|handout:0>{\input{unsat_1}}
+      \only<2>{\input{sat_1}}
+      \end{overlayarea}
+      
+    \end{column}
+
+    \begin{column}{.2\textwidth}
+
+      \only<1|handout:0>{unsat}\only<2>{sat}
+
+    \end{column}
+
+  \end{columns}
+
+\end{frame}

@@ -1,0 +1,94 @@
+\subsection{The Eager and the Lazy approaches}
+
+\begin{frame}
+  \frametitle{The Eager and Lazy Approaches}
+
+  Recall that in our reduction to SAT we need to encode
+  \begin{enumerate}[$(i)$]
+    \item incompatible relations between \tatoms exhaustively 
+    \item the structure of $\varphi$
+  \end{enumerate} 
+  \pause
+  \vfill
+  Condition $(ii)$ is easy to encode. The critical condition is $(i)$. 
+  If we have 3 \tatoms $a, b, c$, then we need to check whether
+  \begin{itemize}
+    \item $a$ and $b$ are incompatible 
+    \item $a$ and $\neg b$ are incompatible 
+    \item \ldots
+    \item $a$ and $b$ and $c$ are incompatible 
+    \item \ldots
+  \end{itemize} 
+  \pause
+  \vfill
+  Potentially, this leads to checking $O(2^n)$ relations, if $n$
+  \tatoms are in the formula
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Eager and Lazy Approaches}
+
+  There are (at least) two ways to discover incompatibilities
+  \begin{itemize}
+    \item {\bf eagerly} adding them before calling a \satsolver (eager approach)
+	  \begin{description}
+	    \item[$+$] Easy to implement: \satsolver used as black-box
+	    \item[$+$] Good for bit-vectors theories
+	    \item[$-$] Potentially generates too big encoding: needs heuristics
+	               to make it efficient
+	    \item[$-$] Bad for arithmetic theories
+	  \end{description} \pause
+    \item {\bf lazily}, by adding them during the \satsolver's search (lazy approach)
+	  \begin{description}
+	    \item[$+$] Generates smaller encodings
+	    \item[$+$] Good for arithmetic theories
+	    \item[$+$] Modular approach: allows easy theory combination
+	    \item[$-$] Trickier to implement: \satsolver has to be ``openen''
+	  \end{description}
+  \end{itemize}
+  \vfill
+  \pause
+  Most of this course will be devoted to the lazy approach, 
+  which is nowadays the most successful technique available
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Eager Approach}
+
+  \begin{center}
+  \scalebox{.5}{\input{eager.pdf_t}}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Lazy Approach}
+
+  \begin{center}
+  \scalebox{.5}{\input{lazy.pdf_t}}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Plan of (the rest of) the course}
+
+  \begin{itemize}
+    \item The eager approach: solving bit-vectors
+    \vfill
+    \item Modern SAT-solvers: conflict analysis, clause learning, and heuristics
+    \vfill
+    \item The Lazy approach: generalities
+    \vfill
+    \item A theory-solver for \Idl
+    \vfill
+    \item A theory-solver for \Uf
+    \vfill
+    \item A theory-solver for \Lra
+    \vfill
+    \item (see if there is time left)
+  \end{itemize}
+
+\end{frame}

@@ -1,0 +1,174 @@
+\subsection{Bit-Blasting}
+
+\begin{frame}
+  \frametitle{Bit-Blasting}
+
+Our goal is to devise an automatic decision procedure (\smtsolver)
+to check the satisfiability of a given \bitvector formula
+\vfill
+\pause
+State-of-the-art techniques are based on reduction to SAT. It is
+called {\bf bit-blasting}
+\vfill
+\pause
+\begin{itemize}
+  \item the formula is seen as a circuit, in which
+        variables and constants are inputs, while
+        other terms are intermediate nodes. The outermost
+        Boolean connective or predicate represents the output
+\vfill
+\pause
+
+  \item each variable is assigned to a vector of Boolean variables
+        ($n$ variables for a variable of sort \SBv{n})
+\vfill
+\pause
+
+  \item each intermediate node is assigned to a vector of
+	Boolean \formulae
+        ($n$ \formulae for a term of sort \SBv{n})
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bit-Blasting}
+  
+  $$
+  (\w{a}{2} \band \w{b}{4}[1:0]) = (\w{c}{2} + \w{d}{2})  
+  $$
+  \vfill
+  \begin{overlayarea}{\textwidth}{5cm}
+  \begin{center}
+    \only<1|handout:0>{\scalebox{.35}{\input{bb_example_0.pdf_t}}}
+    \only<2|handout:0>{\scalebox{.35}{\input{bb_example_1.pdf_t}}}
+    \only<3|handout:0>{\scalebox{.35}{\input{bb_example_2.pdf_t}}}
+    \only<4|handout:0>{\scalebox{.35}{\input{bb_example_3.pdf_t}}}
+    \only<5|handout:0>{\scalebox{.35}{\input{bb_example_4.pdf_t}}}
+    \only<6|handout:0>{\scalebox{.35}{\input{bb_example_5.pdf_t}}}
+    \only<7|handout:0>{\scalebox{.35}{\input{bb_example_6.pdf_t}}}
+    \only<8|handout:0>{\scalebox{.35}{\input{bb_example_7.pdf_t}}}
+    \only<9->{\scalebox{.35}{\input{bb_example_8.pdf_t}}}
+  \end{center}
+  \end{overlayarea}
+  \vfill
+  \onslide<10->{
+    $((b^1 \wedge a^1) \leftrightarrow (c^1 \oplus d^1 \oplus (c^0 \wedge d^0))) \wedge ((b^0 \wedge a^0) \leftrightarrow (c^0 \oplus d^0))$
+  }
+  
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Bit-Blasing Algorithm (1)}
+
+  \tiny
+
+  \begin{tabbing}
+    \= asdf \= asdfasdfasdfasdfasdf \= asdfasdfasdf \= asdf \kill
+    \> BB := $\{ \}$, C := $\{ \}$ \\
+    \> \\
+    \> {\bf Procedure} Bit-Blast-Term( $t$ : \SBv{n} term ) \\
+    \> \\
+    \> {\bf if} ( $t \in $ C ) {\bf return}; \> \> // If already in cache, skip \\
+    \> {\bf else} C := C $\cup\ t$     \> \> // Put in cache \\
+    \> \\ \pause
+    \> {\bf if} ( $t$ is a \SBv{n} variable ) \\
+    \> \> // Let $x$ be the name of the variable \\
+    \> \> BB := BB $\cup\ \{ x \mapsto [\bit{x}{{n-1}}, \ldots, \bit{x}{0}] \}$ \\
+    \> \> // where $\bit{x}{i}$ are fresh Boolean variables \\
+    \> \\ \pause
+    \> {\bf else if} ( $t$ is a \SBv{n} constant ) \\
+    \> \> // Let $c$ be the constant \\
+    \> \> BB := BB $\cup\ \{ c \mapsto [\bit{c}{{n-1}}, \ldots, \bit{c}{0}] \} $ \\
+    \> \> // where $\bit{c}{i}$ is $\bot$ if the i-th bit of $c$ is $0$, $\top$ otherwise \\
+    \> \\ \pause
+    \> {\bf else if} ( $t$ is ($t_1 \band t_2$), and $t_1, t_2$ are \SBv{n} terms ) \\
+    \> \> Bit-Blast-Term( $t_1$ ) \\
+    \> \> Bit-Blast-Term( $t_2$ ) \\
+    \> \> BB := BB $\cup\ \{ t \mapsto [\mbox{BB}(t_1, n-1) \wedge \mbox{BB}(t_2, n-1), \ldots, \mbox{BB}(t_1, 0) \wedge \mbox{BB}(t_2, 0)] \} $ \\
+    \ldots
+  \end{tabbing}
+
+  where $\mbox{BB}(t, i)$ means: 
+  \begin{enumerate}
+    \item retrieve the correspondence $t \mapsto [\bit{t}{n-1}, \ldots, \bit{t}{0}]$, and
+    \item return $\bit{t}{i}$ 
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Bit-Blasing Algorithm (2)}
+
+  \scriptsize
+
+  \begin{tabbing}
+    \= asdf \= asdf \= asdf \= asdf \kill
+    \> {\bf Procedure} Bit-Blast( $\varphi$ : \SBv{n} formula ) \\
+    \> \\
+    \> {\bf if} ( $\varphi$ is $(t_1 = t_2)$, and $t_1, t_2$ are \SBv{n} terms ) \\
+    \> \> Bit-Blast-Term( $t_1$ ) \\
+    \> \> Bit-Blast-Term( $t_2$ ) \\
+    \> \> BB := BB $\cup\ \{ \varphi \mapsto ((\mbox{BB}(t_1, n-1) \leftrightarrow \mbox{BB}(t_2, n-1)) \wedge 
+	                                      \ldots \wedge
+				              (\mbox{BB}(t_1, 0) \leftrightarrow \mbox{BB}(t_2, 0))) \} $ \\
+    \> \\ \pause
+    \> {\bf else if} ( $\varphi$ is $(t_1 <_u t_2)$, and $t_1, t_2$ are \SBv{n} terms ) \\
+    \> \> Bit-Blast-Term( $t_1$ ) \\
+    \> \> Bit-Blast-Term( $t_2$ ) \\
+    \> \> BB := BB $\cup\ \{ \ldots \}$ \\
+    \> \\ \pause
+    \> {\bf else if} ( $\varphi$ is $\varphi_1 \wedge \varphi_2$ are \SBv{n} formula ) \\
+    \> \> Bit-Blast( $\varphi_1$ ) \\
+    \> \> Bit-Blast( $\varphi_2$ ) \\
+    \> \> BB := BB $\cup\ \{ \varphi \mapsto (\mbox{BB}(\varphi_1) \wedge \mbox{BB}(\varphi_2)) \}$ \\
+    \ldots
+  \end{tabbing}
+
+  where $BB(\varphi)$ means: 
+  \begin{enumerate}
+    \item retrieve the correspondence $\varphi \mapsto \psi$, and
+    \item return $\psi$ 
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{SMT via Bit-Blasing}
+
+  \begin{center}
+  \scalebox{.5}{\input{bitblasting.pdf_t}}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bit-Blasing pros and cons}
+
+  \scriptsize
+
+  Pros
+  \begin{itemize}
+    \item Very easy to write, if compared to write a native \bitvector solver \pause
+    \vfill
+    \item Boolean model from SAT can be mapped back to a model for each \bitvector variable.
+	  If $\w{x}{n}$ was bit-blasted as $x^{n-1}, \ldots, x^0$
+	  \begin{itemize}
+	    \item retrieve SAT assignment for each $x^i$ (e.g., $x^0 = \top$, $x^1 = \bot$)
+	    \item construct actual value for $\w{x}{n}$ by mapping $\top$ to $1$ and $\bot$ to $0$ (e.g., $\w{x}{2} = 01$)
+	  \end{itemize}
+  \end{itemize}
+  \vfill
+  \pause
+  Cons
+  \begin{itemize}
+    \item Does not scale very well. Consider the formula $\neg(\w{x}{n} = \w{0}{32}) \wedge (\w{x}{n} \band \w{y}{n}) = (\w{x}{n} + \w{y}{n})$.
+          It is unsat for {\bf every} $n$. \pause But to prove it for $n=32$ requires $64$ Boolean variables, to prove it with $n=1024$
+	  requires $2048$ Boolean variables
+    \vfill
+    \pause
+    \item It destroys the structure of the formula. In the encoding $\w{x}{32}$ is not seen as a ``single object'' but each
+          $x^i$ is unrelated and independent
+  \end{itemize}
+
+\end{frame}

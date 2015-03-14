@@ -1,0 +1,43 @@
+\begin{picture}(0,0)%
+\includegraphics{architecture_fig.pdf}%
+\end{picture}%
+\setlength{\unitlength}{4144sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(14243,7164)(-4071,-8221)
+\put(1576,-8071){\makebox(0,0)[b]{\smash{{\SetFigFont{29}{34.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}sat (model)  /  unsat (proof)}%
+}}}}
+\put(-2474,-5821){\makebox(0,0)[b]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Simplifications}%
+}}}}
+\put(-2474,-3976){\makebox(0,0)[b]{\smash{{\SetFigFont{29}{34.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Parser}%
+}}}}
+\put(-3914,-2851){\makebox(0,0)[lb]{\smash{{\SetFigFont{25}{30.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Preprocessor}%
+}}}}
+\put(5131,-6271){\makebox(0,0)[b]{\smash{{\SetFigFont{29}{34.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\Idl$}%
+}}}}
+\put(8821,-6271){\makebox(0,0)[b]{\smash{{\SetFigFont{29}{34.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\Bitvectors$}%
+}}}}
+\put(6931,-6271){\makebox(0,0)[b]{\smash{{\SetFigFont{29}{34.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\Lra$}%
+}}}}
+\put(6931,-4021){\makebox(0,0)[b]{\smash{{\SetFigFont{29}{34.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\Uf$}%
+}}}}
+\put(1621,-4201){\makebox(0,0)[b]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Conversion}%
+}}}}
+\put(1621,-3751){\makebox(0,0)[b]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}CNF}%
+}}}}
+\put(136,-2851){\makebox(0,0)[lb]{\smash{{\SetFigFont{25}{30.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}SAT-Solver}%
+}}}}
+\put(4186,-2851){\makebox(0,0)[lb]{\smash{{\SetFigFont{25}{30.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}\tsolvers}%
+}}}}
+\put(1576,-6316){\makebox(0,0)[b]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}Engine}%
+}}}}
+\put(1576,-5866){\makebox(0,0)[b]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}CDCL}%
+}}}}
+\put(-2474,-1456){\makebox(0,0)[b]{\smash{{\SetFigFont{29}{34.8}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\varphi$}%
+}}}}
+\end{picture}%

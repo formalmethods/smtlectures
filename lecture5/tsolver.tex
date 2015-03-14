@@ -1,0 +1,236 @@
+\begin{frame}
+  \frametitle{\tsolver Compliance}
+
+  So far we have seen that BF can be used
+  to compute a model of a given {\bf consistent}
+  set of \Idl constraints
+  \vfill
+  Recall that to have an efficient \tsolver
+  the following features should be supported
+  \vfill
+  \begin{itemize}
+    \item Minimal Conflicts
+  \vfill
+    \item Incrementality
+  \vfill
+    \item Backtrackability
+  \vfill
+    \item Theory Propagation
+  \end{itemize}
+  \vfill
+  Let's see how to improve the current algorithm to
+  support them
+
+\end{frame}
+
+\subsection{Minimal Conflicts}
+
+\begin{frame}
+  \frametitle{Minimal Conflicts}
+
+  So far we assumed that $G(V,E)$ did not contain
+  negative cycles. However it is not difficult to
+  tweak the BF to recognize them
+  \vfill
+  \pause
+  Recall the {\bf spanning tree}: the tree that holds
+  shortest paths 
+  \vfill
+  \begin{center}
+    \input{spanning_tree}
+  \end{center}
+  \vfill
+  \pause
+  It is easy to keep the spanning tree:
+  \begin{itemize}
+    \item each node $t$ keeps two fields {\bf fatherVertex}
+	  and {\bf fatherEdge} that stores its father 
+          in the spanning tree
+    \item when a {\bf relax} is done on $t$ (line 8 of BF)
+	  through an edge $e = (s, t; c)$, $t.fatherVertex$ is
+	  set to $s$ and $t.fatherEdge$ is set to $e$
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Minimal Conflicts}
+
+  \scriptsize
+
+  When a negative cycle exists, the spanning tree tends
+  to become {\bf cyclic} (trees are acyclic instead). It is
+  easy to recognize this situation and report the negative cycle
+
+  \vfill
+  \pause
+
+  \begin{columns}
+
+  \begin{column}{.45\textwidth}
+    $TBV =$ [ ] \\
+    Current vetex: $z$ \\
+    Current edge: $(z,w;2)$ 
+  \end{column}
+
+  \begin{column}{.45\textwidth}
+    \begin{center}
+    \begin{overlayarea}{\textwidth}{3cm}
+      \input{neg_cycle_1}
+    \end{overlayarea}
+    \end{center}
+  \end{column}
+
+  \end{columns}
+
+  \vfill
+  \pause
+
+  \begin{tabbing}
+  as \= a \= a \= a \= as \= asdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+  checkNegativeCycle( $s$, $t$ ) \\
+  \> $\babst{\nu} = \{ \ \}$ \\ \\
+  \> while ( $s \not= t$ \&\& $s \not= I$ ) \\
+  \> \> $s = s.fatherVertex$ \\
+  \> \> $\babst{\nu} = \babst{\nu} \cup \{ s.fatherEdge \}$ \\ \\
+  \> if ( $s$ == $t$ ) return conflict \>\>\>\>\> // Neg. Cycle detected \\
+  \> return OK        \>\>\>\>\> // $I$ reached
+  \end{tabbing}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Minimal Conflicts}
+
+  Bellman-Ford with negative cycle detection
+
+  \begin{tabbing}
+  as \= a \= a \= a \= as \= asdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+  1  \> $\pi(x) = \infty$ for all $x \in V, x \not= I$ \\
+  2  \> $\pi(I) = 0$ \\
+  3  \> $TBV.pushBack( I )$ \\
+  4  \> while ( $TBV.size(\ ) > 0$ ) \\
+  5  \> \> $s = TBV.popFront(\ )$ \\
+  6  \> \> foreach $(s,t;w) \in E$         \> \> \> \> // for each outgoing edge \\
+  7  \> \> \> if ( $\pi(t) - \pi(s) > w$ )    \> \> \> // is too far ? \\
+  8  \> \> \> \> \colone{if ( checkNegativeCycle( $s$, $t$ ) == conflict )} \\
+  9  \> \> \> \> \> \colone{return $\babst{\nu}$} \\
+  10 \> \> \> \> \colone{$s.fatherVertex = t$} \\
+  11 \> \> \> \> \colone{$s.fatherEdge = (s,t;w)$} \\
+  12  \> \> \> \> $\pi(t) = \pi(s) + w$           \> \> // relax (decrease $\pi(t)$) \\
+  13  \> \> \> \> if ( $TBV.has( t ) == false$ ) \\ 
+  14 \> \> \> \> \> $TBV.pushBack( t )$             \> // enqueue $t$ if not there \\
+  \end{tabbing}
+
+\end{frame}
+
+\subsection{Incrementality}
+
+\begin{frame}
+  \frametitle{Incrementality}
+
+  \scriptsize
+  
+  Incrementality comes almost for free !
+  \vfill
+  \begin{itemize}
+
+    \item we always keep the $\pi$ function ``alive'', and only
+          update it slightly
+  \vfill
+
+    \item $G(V,E)$ keeps track of {\bf active} and {\bf inactive}
+          edges: active edges are those on $\babst{\mu}$
+  \vfill
+
+    \item when a new \tatom $x - y \leq c$ is added to $\babst{\mu}$, the
+	  corresponding edge $(x,y;c)$ becomes active in the graph
+  \vfill
+
+    \item we add $x$ to $TBV$, and run BF from line 4
+
+  \end{itemize}
+  \vfill
+  \begin{columns}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+    $x-y \leq 8 \not\in \babst{\mu}$ \\
+    \medskip
+    \scalebox{.7}{\input{incremental}}
+  \end{center} 
+  \end{column}
+
+  \pause
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+    $x-y \leq 8$ pushed to $\babst{\mu}$ \\
+    \medskip
+    \scalebox{.7}{\input{incremental_1}}
+  \end{center} 
+  \end{column}
+
+  \pause
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+    After BF \\
+    \medskip
+    \scalebox{.7}{\input{incremental_2}}
+  \end{center} 
+  \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\subsection{Backtrackability}
+
+\begin{frame}
+  \frametitle{Backtrackability}
+
+  Backtracking can be done efficiently
+  \vfill
+  First of all, recall that $\mu(x) = -\pi(x)$. Second obeserve that
+  \vfill
+  \begin{exampleblock}{Observation 1}
+    Let $\mu$ be a model for a set $\babst{\mu}$ of constraints.
+    Then $\mu$ is also a model for {\bf any subset} of $\babst{\mu}$
+  \end{exampleblock}
+  \vfill
+  Observation 1 implies that when backtracking we just have to turn some
+  edges into inactive, and keep the last $\pi$ intact
+  \vfill
+  This is done as follows: BF will always work on a temporary $\pi$, called $\pi'$. If satisfiable,
+  $\pi$ is replaced by $\pi'$, otherwise we keep $\pi$  
+
+\end{frame}
+
+\subsection{Theory Propagation}
+
+\begin{frame}
+  \frametitle{Theory Propagation}
+
+  Theory Propagation is the process of activating some edges in the
+  graph that are implied by the current $\babst{\mu}$
+  \vfill
+  \begin{exampleblock}{Observation 2}
+    A set of constraints \\
+    $\{\ \colone{x_1} - x_2 \leq c_1,\ x_2 - x_3 \leq c_2,\ \ldots,\ x_{n-1} - \coltwo{x_n} \leq c_{n-1}\ \}$ \\
+    implies 
+    $\quad\quad\colone{x_1} - \coltwo{x_n} \leq c_n\quad\quad$ 
+    iff 
+    $\quad\quad c_1 + c_2 + \ldots c_{n-1} \leq c_n$
+  \end{exampleblock}
+  \vfill
+  \pause
+  Example:
+
+  \begin{center}
+    \input{arc_obs} 
+  \end{center}
+
+  $x - z \leq 10$, currently inactive, can be theory-propagated
+
+\end{frame}

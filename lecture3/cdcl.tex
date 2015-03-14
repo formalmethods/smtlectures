@@ -1,0 +1,305 @@
+\subsection{Clause Learning}
+
+\begin{frame}
+  \frametitle{From DPLL to CDCL}
+
+  \scriptsize
+
+  Consider the following scenario before and after BCP
+  \vfill
+  \begin{tabular}{ccc}
+  \begin{minipage}{.4\textwidth}
+  $$
+  \begin{array}{l}
+    \ldots \\
+    (\colone{\neg a_{10}} \vee \colone{\neg a_1} \vee a_4) \\
+    (\colone{a_3} \vee \colone{\neg a_1} \vee a_5) \\
+    (\neg a_4 \vee a_6) \\
+    (\neg a_5 \vee \neg a_6) \\
+    \ldots \\
+    \\
+    \{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4} \}
+  \end{array}
+  $$
+  \end{minipage}
+  & ~~~~ &
+  \begin{minipage}{.5\textwidth}
+  $$
+  \begin{array}{l}
+    \ldots \\
+    (\colone{\neg a_{10}} \vee \colone{\neg a_1} \vee \coltwo{a_4}) \\
+    (\colone{a_3} \vee \colone{\neg a_1} \vee \coltwo{a_5}) \\
+    (\colone{\neg a_4} \vee \coltwo{a_6}) \\
+    (\colone{\neg a_5} \vee \colone{\neg a_6}) \\
+    \ldots \\
+    \\
+    \{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4}, \dec{a_4}{4}, \dec{a_5}{4}, \dec{a_6}{4}\}
+  \end{array}
+  $$
+  \end{minipage}
+  \end{tabular}
+  \vfill
+  \pause
+  BCP leads to a conflict, but, what is the {\bf reason} for it ?
+  Do $a_7$ and $a_2$ play any role ?
+  \vfill
+  \pause
+  Does it make sense to consider the assignments (which backtracking would produce) ?\\
+  $\{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{\neg a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4} \}$ ---
+  $\{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4} \}$ ---
+  $\{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{a_2}{3}, \dec{a_1}{4} \}$ \\
+  \vfill
+  \pause
+  No, because {\em whenever $a_{10}$, $\neg a_3$ is assigned, then $a_1$ must not be set to $\top$}. \pause
+  This translates to an additional clause, which can be {\em learnt}, i.e., it can be added to the formula 
+  $$(\neg a_{10} \vee a_3 \vee \neg a_1)$$
+   
+\end{frame}
+
+\begin{frame}
+  \frametitle{From DPLL to CDCL}
+
+  Search
+  \vfill
+
+  \begin{tabular}{ccc}
+    Without learnt clause & & With learnt clause \\ \\
+    \begin{minipage}{.4\textwidth}
+      \scalebox{.3}{\input{search_5.pdf_t}}
+    \end{minipage}
+    & ~~~~ & 
+    \begin{minipage}{.4\textwidth}
+      \scalebox{.3}{\input{search_6.pdf_t}}
+    \end{minipage}
+  \end{tabular}
+
+\end{frame}
+
+\subsection{Conflict Analysis}
+
+\begin{frame}
+  \frametitle{Deriving the clause to be learnt}
+
+  \scriptsize
+
+  The clause to be learnt is derived from the conflict ``caused'' by BCP
+  (conflict is never caused by a Decision)
+  \vfill
+  \pause
+  To better {\bf analyze} a conflict we need to look at the {\bf implication graph}
+  \vfill
+  \begin{tabular}{ccc}
+  \begin{minipage}{.4\textwidth}
+  $$
+  \begin{array}{l}
+    \ldots \\
+    (\colone{\neg a_{10}} \vee \colone{\neg a_1} \vee \coltwo{a_4}) \\
+    (\colone{a_3} \vee \colone{\neg a_1} \vee \coltwo{a_5}) \\
+    (\colone{\neg a_4} \vee \coltwo{a_6}) \\
+    (\colone{\neg a_5} \vee \colone{\neg a_6}) \\
+    \ldots \\  \\
+    \{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4}, \dec{a_4}{4}, \dec{a_5}{4}, \dec{a_6}{4}\}
+  \end{array}
+  $$
+  \end{minipage}
+  & ~~~ &
+  \begin{minipage}{.4\textwidth}
+  \begin{overlayarea}{.4\textwidth}{4cm}
+    \only<2|handout:0>{\scalebox{.4}{\input{impl_graph_1.pdf_t}}}
+    \only<3|handout:0>{\scalebox{.4}{\input{impl_graph_2.pdf_t}}}
+    \only<4|handout:0>{\scalebox{.4}{\input{impl_graph_3.pdf_t}}}
+    \only<5->{\scalebox{.4}{\input{impl_graph_4.pdf_t}}}
+  \end{overlayarea}
+  \end{minipage}
+  \end{tabular}
+  \vfill
+  \pause\pause
+  Any cut of the graph that separates the conflict from the decision variables
+  represents a possible learnt clause
+  \vfill
+  \pause
+  In this course we take the clause that contains 
+  {\bf only one variable of the current decision level}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Deriving the clause to be learnt}
+
+  \scriptsize
+
+  In practice, we use {\bf resolution} steps to compute the learnt clause:
+  \begin{itemize}
+    \item we start from the clause with all literals to $\bot$ (conflicting clause)
+    \item iteratively, we take the clause that propagated the last literal on the trail
+	  and we apply resolution
+    \item we stop when only one literal from the current decision level is left in the clause 
+  \end{itemize}
+  \vfill
+  \pause
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+      \begin{overlayarea}{.4\textwidth}{3cm}
+      \only<2|handout:0>{\scalebox{.4}{\input{ca_1.pdf_t}}}
+      \only<3|handout:0>{\scalebox{.4}{\input{ca_2.pdf_t}}}
+      \only<4|handout:0>{\scalebox{.4}{\input{ca_3.pdf_t}}}
+      \only<5|handout:0>{\scalebox{.4}{\input{ca_4.pdf_t}}}
+      \only<6|handout:0>{\scalebox{.4}{\input{ca_5.pdf_t}}}
+      \only<7|handout:0>{\scalebox{.4}{\input{ca_6.pdf_t}}}
+      \only<8->{\scalebox{.4}{\input{ca_7.pdf_t}}}
+      \end{overlayarea}
+    \end{minipage}
+    & ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ &
+    \begin{minipage}{.4\textwidth}
+      \begin{tabular}{ccl}
+	\hline
+	Trail & dl & Reason \\
+	\hline
+	$a_{10}$   & 0 & $( a_{10} )$ \\
+	$\neg a_3$ & 1 & Decision \\
+	$a_7$      & 2 & Decision \\
+	$\neg a_2$ & 3 & Decision \\
+	$a_1$      & 4 & Decision \\
+	$a_4$      & 4 & $(\neg a_{10} \vee \neg a_1 \vee a_4)$ \\
+	$a_5$      & 4 & $(a_3 \vee \neg a_1 \vee a_5)$ \\
+	$a_6$      & 4 & $(\neg a_4 \vee a_6)$ \\
+	\hline
+      \end{tabular}
+      \medskip \\
+      $\{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4}, \dec{a_4}{4}, \dec{a_5}{4}, \dec{a_6}{4}\}$
+    \end{minipage}
+  \end{tabular}
+  \vfill
+  \onslide<9>{We say that $(\neg a_{10} \vee a_3 \vee \neg a_1)$ is the {\bf conflict clause} and it is the one we learn}
+
+\end{frame}
+
+\subsection{Non-Chronological Bactracking}
+
+\begin{frame}
+  \frametitle{Non-chronological backtracking}
+
+  So far we have been backtracking {\bf chronologically}, but
+  \vfill
+  given our (wrong) assignment $\{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4}, \dec{a_4}{4}, \dec{a_5}{4}, \dec{a_6}{4}\}$
+  and the computed conflict clause $(\neg a_{10} \vee a_3 \vee \neg a_1)$, is it really clever to backtrack to level 3 ?
+  \vfill
+  \pause
+  The correct level to backtrack to is: 
+  \begin{center}
+  ``the level that would have propagated $\neg a_1$ if we had the clause
+  $(\neg a_{10} \vee a_3 \vee \neg a_1)$ as part of the original formula''
+  \end{center}
+  \vfill
+  \pause
+  In our case, it is level 1, because assignment $\{ \dec{a_{10}}{0}, \dec{\neg a_3}{1} \}$ is
+  sufficient to propagate $\neg a_1$ in $(\colone{\neg a_{10}} \vee \colone{a_3} \vee \neg a_1)$
+  \vfill
+  \pause
+  We say that $\neg a_1$ is the {\bf asserting literal} as it becomes true by BCP once 
+  we have backtracked to the correct decision level 
+\end{frame}
+
+\begin{frame}
+  \frametitle{CDCL: Conflict Driven Clause Learning}
+
+  Search
+  \vfill
+
+  \begin{tabular}{ccc}
+    DPLL                        & & CDCL  \\ 
+    no learning                 & & conflict-driven learning \\
+    chronological backtracking  & & non-chronological backtracking \\ \\
+    \begin{minipage}{.4\textwidth}
+      \scalebox{.3}{\input{search_7.pdf_t}}
+    \end{minipage}
+    & ~~~~ & 
+    \begin{minipage}{.4\textwidth}
+      \scalebox{.3}{\input{search_8.pdf_t}}
+    \end{minipage}
+  \end{tabular}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The CDCL Procedure}
+
+  \scriptsize
+
+  \vfill
+
+  \begin{tabbing}
+  as \= a \= a \= a \= as \= asdfsdfasdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+  \> $dl = 0$; $trail = \{\ \}$;                              \> \> \> \> \> // Decision level, assignment\\ \\
+  \> while ( $true$ ) \\ \\
+  \> \> if ( BCP( ) == conflict )                                \> \> \> \> // Do BCP until possible \\
+  \> \> \> if ( $dl == 0$ ) return $unsat$;                         \> \> \> // Unresolvable conflict \\
+  \> \> \> $C,dl =$ {\sc AnalyzeConflict}( );                           \> \> \> // Compute conf. clause, and dec. level \\
+  \> \> \> {\sc AddClause}( $C$ );                                      \> \> \> // Add $C$ to clause database \\
+  \> \> \> {\sc BacktrackTo}( $dl$ );                                   \> \> \> // Backtracking (shrinks $trail$) \\
+  \> \> else \\
+  \> \> \> if ( ``all variables assigned'' ) return $sat$;          \> \> \> // $trail$ holds satisfying assignment \\
+  \> \> \> $l = $ {\sc Decision}( );                                      \> \> \> // Do another decision \\
+  \> \> \> $trail = trail \cup \{ l \}$ \\                          
+  \> \> \> $dl = dl + 1$;                                           \> \> \> // Increase decision level \\
+  \end{tabbing}
+
+  \vfill
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The CDCL Procedure}
+
+  \begin{center}
+  \scalebox{.45}{\input{cdcl.pdf_t}}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Other things which we did not see}
+
+  {\bf Watched Literals}: technique to efficiently discover which clauses
+                          become unsat
+  \vfill
+  {\bf Decision heuristics}: how do we choose the right variable ?
+  And which polarity ? ($\top, \bot$). Landmark strategy is VSIDS heuristic
+  \vfill
+  {\bf Clause removal}: adding too many clauses negatively impacts 
+			performance, need mechanisms to remove learnts
+  \vfill
+  {\bf Restarts}: start the search from scratch, but retaining learnts
+  \vfill
+  many many other heuristics discovered every year
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exercise}
+
+  \scriptsize
+
+  Consider the following clause set and assignment
+  $$
+  \begin{array}{l}
+  (\neg a_1 \vee a_2) \\
+  (\neg a_1 \vee a_3 \vee a_9) \\
+  (\neg a_2 \vee \neg a_3 \vee a_4) \\
+  (\neg a_4 \vee a_5 \vee a_{10}) \\
+  (\neg a_4 \vee a_6 \vee a_{11}) \\
+  (\neg a_5 \vee \neg a_6) \\
+  (a_1 \vee a_7 \vee \neg a_{12}) \\
+  (a_1 \vee a_8) \\
+  (\neg a_7 \vee \neg a_8 \vee \neg a_{13}) \\
+  \ldots \\ \\
+  \{ \dec{\neg a_9}{1}, \dec{a_{12}}{2}, \dec{a_{13}}{2}, \dec{\neg a_{10}}{3}, \dec{\neg a_{11}}{3}, \ldots, \dec{a_1}{6}\}
+  \end{array}
+  $$
+  \vfill
+  \begin{itemize}
+    \item Find the correct conflict clause
+    \item Find the correct decision level to backtrack
+  \end{itemize}
+
+\end{frame}

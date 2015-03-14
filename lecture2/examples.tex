@@ -1,0 +1,71 @@
+\subsection{Examples}
+
+\begin{frame}[fragile]
+  \frametitle{Example 1: C code}
+
+  Pseudo-code
+  \begin{verbatim}
+  i := 1
+  while ( i > 0 )
+    i := i + 1 
+  \end{verbatim} 
+
+  \vfill
+  \pause
+
+  C equivalent
+  \begin{verbatim}
+  unsigned i = 1;
+  while ( i > 0 )
+    i = i + 1; 
+  \end{verbatim} 
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Example 2: C code}
+
+  Evaluation of \SBv{32} with C
+  \begin{verbatim}
+  unsigned a = 0xFFFF0000;
+  unsigned b = 0x0000FFFF;
+
+  printf( "a + b   : %8X\n", a + b );
+  printf( "a * b   : %8X\n", a * b );
+  printf( "a AND b : %8X\n", a & b );
+  printf( "a OR b  : %8X\n", a | b );
+  \end{verbatim} 
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Example 3: Circuit}
+
+  \scriptsize
+
+  \begin{verbatim}
+  module counter(clk, count); 
+
+    input clk ;
+    output [2:0] count ;
+    wire cin ;
+    reg [2:0] count ;
+
+    assign cin = ~count [0] & ~count [1] & ~count [2];
+  
+    initial begin
+      count = 3'b0;
+    end
+  
+    always @ ( posedge clk )
+    begin 
+      count [0] <= cin; 
+      count [1] <= count [0]; 
+      count [2] <= count [1];
+    end
+
+  end module
+  \end{verbatim}
+  \vspace{-70pt}{\hspace{160pt}{\scalebox{.25}{\input{counter.pdf_t}}}}
+
+\end{frame}

@@ -1,0 +1,120 @@
+\subsection{Simplifications}
+
+\begin{frame}
+  \frametitle{Simplifications}
+
+  \scriptsize
+
+  We use {\bf simplification} rules to fight the two problems in previous slide,
+  before bit-blasting everything
+  \vfill
+  \pause
+  \begin{center}
+  \scalebox{.4}{\input{simplification.pdf_t}}
+  \end{center}
+  \vfill
+  \pause
+  Simplifications exploit properties of \bitvectors to try to reduce
+  the complexity of the formula. We see here some examples, but many
+  more rules do exist. Also, it is very important the way they are
+  combined together 
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Trivial Simplifications}
+
+  The following are trivial consequences of the semantic of \bitvectors and
+  \formulae in general
+  \vfill
+  \pause
+  \bitvectors trivial simplifications
+  \begin{itemize}
+    \item $t = t\ \Rightarrow\ \top$\ \ \ \ for a generic term
+    \item $c = d\ \Rightarrow\ \bot$\ \ \ \ for two different constants $c$ and $d$
+    \item $t \band 0\ldots0\ \Rightarrow\ 0\ldots0$\ \ \ \ for a generic term
+    \item \ldots
+  \end{itemize}
+  \vfill
+  \pause
+  \begin{itemize}
+    \item $\varphi \wedge \varphi\ \Rightarrow\ \varphi$\ \ \ \ for a generic formula
+    \item $\varphi \wedge \top\ \Rightarrow\ \varphi$\ \ \ \ for a generic formula
+    \item $\varphi \vee \top\ \Rightarrow\ \top$\ \ \ \ for a generic formula
+    \item \ldots
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Ground Term evaluation}
+  
+  If a term is {\bf ground}, i.e., it contains no variables, then it
+  can be always simplified to a single constant
+  \vfill
+  \pause
+  Examples:
+  \begin{itemize}
+    \item $0000 :: 1000\ \Rightarrow 00001000$
+    \item $0010[1:0]\ \Rightarrow 10$
+    \item $0100 + 0101\ \Rightarrow 1001$
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Variable Elimination Rule}
+
+  Suppose that the input formula $\varphi$ is of the kind
+  \vfill
+  $$
+  \varphi'\ \wedge\ (\w{x}{n} = \w{t}{n})
+  $$
+  \vfill
+  where $\w{x}{n}$ is a variable, and $\w{t}{n}$ is a term {\bf not containing} $\w{x}{n}$
+  \pause
+  \vfill
+  then we can rewrite $\varphi$ as
+  $$
+  \varphi'[\w{t}{n}/\w{x}{n}]
+  $$
+  \vfill
+  i.e., we replace every occurrence of $\w{x}{n}$ by $\w{t}{n}$. \pause We save $n$
+  Boolean variables in the reduction to SAT
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Concatenation Elimination Rule}
+
+  Suppose that we have the equality
+  \vfill
+  $$
+  \w{t}{n} :: \w{s}{m} = \w{r}{n} :: \w{u}{m}
+  $$
+  \vfill
+  then, because the concatenations {\bf match}, we can rewrite it as
+  \pause
+  \vfill
+  $$
+  (\w{t}{n} = \w{r}{n}) \wedge (\w{s}{m} = \w{u}{m}) 
+  $$
+  \vfill
+  this rewriting may give more opportunity for applications of previous rules
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exercizes}
+
+  \begin{enumerate}
+
+    \item Complete the missing cases in procedures Bit-Blast-Term and Bit-Blast
+    \vfill
+    \item Bit-Blast the formula $\neg(\w{x}{3} = 000) \wedge (\w{x}{3} \band \w{y}{3}) = (\w{x}{3} + \w{y}{3})$ 
+    \vfill
+    \item Simplify the formula $(\w{x}{4} :: \w{y}{4}) = (\w{z}{4} :: \w{x}{4}) \wedge \neg( \w{y}{4} = \w{z}{4})$ 
+
+  \end{enumerate}
+
+\end{frame}

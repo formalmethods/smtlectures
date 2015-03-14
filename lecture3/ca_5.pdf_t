@@ -1,0 +1,23 @@
+\begin{picture}(0,0)%
+\includegraphics{ca_5.pdf}%
+\end{picture}%
+\setlength{\unitlength}{3947sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(5669,2176)(1554,-3095)
+\put(3301,-1186){\makebox(0,0)[rb]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$(\colone{\neg a_5} \vee \colone{\neg a_6})$}%
+}}}}
+\put(3601,-1186){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$(\colone{\neg a_4} \vee \coltwo{a_6})$}%
+}}}}
+\put(3976,-1786){\makebox(0,0)[rb]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$(\colone{\neg a_5} \vee \colone{\neg a_4})$}%
+}}}}
+\put(4201,-1786){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$(\colone{a_3} \vee \colone{\neg a_1} \vee \coltwo{a_5})$}%
+}}}}
+\put(4501,-2386){\makebox(0,0)[rb]{\smash{{\SetFigFont{20}{24.0}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$(\colone{\neg a_4} \vee \colone{a_3} \vee \colone{\neg a_1})$}%
+}}}}
+\end{picture}%

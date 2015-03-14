@@ -1,0 +1,15 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{state} = [rectangle,draw=oproverblue!60,fill=oproverblue!20,thick]
+\tikzstyle{initialstate} = [rectangle,draw=mydarkgreen!60,fill=mydarkgreen!20,thick]
+\tikzstyle{tran}  = [->,>=stealth,semithick]
+
+\node[state] (000) at (  -2.5,  0) {$\nodd{door=closed}{engine=off}{tray=full}$};
+\node[state] (100) at (  2.5,  0)  {$\nodd{door=closed}{engine=on}{tray=empty}$};
+
+\draw[tran] (000) -- node {\scriptsize start\_washing} (100);
+
+\end{tikzpicture}

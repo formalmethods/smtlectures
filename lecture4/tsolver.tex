@@ -1,0 +1,138 @@
+\subsection{\tsolver Features}
+
+\begin{frame}
+  \frametitle{Incrementality and Backtrackability}
+
+  \scriptsize
+
+  \tsolver is asked to check consistency on sets of constraints that evolve {\bf incrementally}
+  because of BCP and Decide actions
+  $$
+    \babst{\mu} = \{\ \dec{x = 0}{0},\ \dec{x < y}{0},\ \dec{x + y = z}{1}\ \} 
+  $$
+  and can be backtracked because of Conflict Analysis and Backtracking
+  $$
+    \babst{\mu} = \{\ \dec{x = 0}{0}, \dec{x < y}{0}\ \} 
+  $$
+  \vfill
+  \pause
+  Everything happens in a stack-based fashion: constraints are pushed and popped on $\babst{\mu}$
+  in a LIFO order
+  \vfill
+  For efficiency, \tsolver should be able to
+  \begin{itemize}
+    \item reason incremetally: check of consistency of $\{ \dec{x = 0}{0},\ \dec{x < y}{0},\ \dec{x + y = z}{1}\ \}$ should reuse
+          as much as possible the computation already spent for checking $\{ \dec{x = 0}{0}, \dec{x < y}{0} \}$
+    \pause
+    \item backtrack efficiently: going back from $\{ \dec{x = 0}{0},\ \dec{x < y}{0},\ \dec{x + y = z}{1}\ \}$ to
+	  $\{ \dec{x = 0}{0}, \dec{x < y}{0} \}$ should be done quickly and without losing information 
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Minimal Conflicts}
+
+  \scriptsize
+
+  It is desirable for the \tsolver to return {\bf minimal conflicts}
+
+  \vfill
+  Consider the assignment
+  $$\babst{\mu} = \{ x - y \leq 0,\ y - z \leq 0,\  \ldots (1000 \mbox{ other constratints }) \ldots, z - x \leq -1,\ \}$$
+  according to our basic procedure we would add the clause $\neg \babst{\mu}$ to the SAT-solver
+  \vfill 
+  \pause
+  However we see that 
+  $$\babst{\nu} = \{ x - y \leq 0,\ y - z \leq 0, z - x \leq -1 \}$$ 
+  is already a minimal reason for the
+  \T-unsatisfiability, and $\neg \babst{\nu}$ is a clause with $3$ literals instead of $1003$.
+  We call these reasons \tconflicts
+  \vfill
+  A \tconflict is {\bf minimal} if it does not contain redundant \tatoms
+  \vfill
+  \pause
+  Small clauses are more retrictive than big clauses, and they therefore reduce SAT search
+\end{frame}
+
+\begin{frame}
+  \frametitle{Theory Propagation}
+
+  \scriptsize
+
+  So far we have seen that \tsolver is {\bf passive} as far as the search is concerned:
+  \begin{itemize}
+    \item SAT is the master that drives the search
+    \item \tsolver is queried to confirm that the search is correct from the point of view of \T
+  \end{itemize}
+  However, consider the following scenario
+  $$\babst{\mu} = \{ \ldots, \dec{x > 0}{2},\ \dec{y > 0}{3} \}$$
+  and assume that 
+  \begin{itemize}
+    \item BCP has completed 
+    \item There is a \tatom $x + y > 0$ that is currently not assigned (i.e., it is not in $\babst{\mu}$)
+  \end{itemize}
+  Also we know that in \T the following implication holds
+  $$
+    ( x > 0 ) \wedge ( y > 0 ) \rightarrow ( x + y > 0 )
+  $$
+  Then we can do a {\bf Theory Propagation}, i.e., we can expand the assignment as
+  $$
+    \babst{\mu} = \{ \ldots, \dec{x > 0}{2},\ \dec{y > 0}{3}, \dec{(x+y > 0)}{3} \}
+  $$
+  thus avoiding a Decision in SAT
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The CDCL(\T) Procedure}
+
+  \scriptsize
+
+  \vfill
+
+  \begin{tabbing}
+  as \= a \= a \= a \= as \= asdfsdfasdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+  \> class {\sc Theory};                         \> \> \> \> \> // \tsolver \\
+  \\
+  \> $dl = 0$; $trail = \{\ \}$;                                  \> \> \> \> \> // Decision level, assignment\\ \\
+  \> while ( $true$ ) \\ \\
+  \> \> if ( {\sc BCP}( ) == conflict )                                    \> \> \> \> // Do BCP until possible \\
+  \> \> \> if ( $dl == 0$ ) return $unsat$;                             \> \> \> // Unresolvable conflict \\
+  \> \> \> $C,dl =$ {\sc AnalyzeConflict}( );                           \> \> \> // Compute conf. clause, and dec. level \\
+  \> \> \> {\sc AddClause}( $C$ );                                      \> \> \> // Add $C$ to clause database \\
+  \> \> \> {\sc BacktrackTo}( $dl$ );                                   \> \> \> // Backtracking (shrinks $trail$) \\
+  \> \> else if ( {\sc Theory.Check}( $trail$ ) == unsat )      \> \> \> \> // \tsolver check \\
+  \> \> \> \textcolor{red}{$\babst{\nu}$ = {\sc Theory.GetConflict}( );}             \> \> \> // Retrieve \tconflict \\
+  \> \> \> {\sc AddClause}( $\neg \babst{\nu}$ );                  \> \> \> // Add clause that is now unsat \\
+  \> \> \textcolor{red}{else if ( {\sc Theory.CanPropagate}( ) )}        \> \> \> \> // Can do some propagations ? \\
+  \> \> \> \textcolor{red}{$\rho$ = {\sc Theory.Propagate}( );}                      \> \> \> // Retrieve propagations \\
+  \> \> \> \textcolor{red}{$trail = trail \cup \rho$;}                               \> \> \> // Extend assignment \\
+  \> \> else \\
+  \> \> \> if ( ``all variables assigned'' ) return $sat$;              \> \> \> // $trail$ holds satisfying assignment \\
+  \> \> \> $l = $ {\sc Decision}( );                                    \> \> \> // Do another decision \\
+  \> \> \> $trail = trail \cup \{ l \}$; \\                          
+  \> \> \> $dl = dl + 1$;                                               \> \> \> // Increase decision level \\
+  \end{tabbing}
+
+  \vfill
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The CDCL(\T) Procedure}
+
+  \begin{columns}
+    \begin{column}{.35\textwidth}
+      \vspace{-70pt}
+      \scalebox{.3}{\input{cdcl.pdf_t}}
+    \end{column}
+
+    \begin{column}{.60\textwidth}
+      \vspace{70pt}
+      \scalebox{.3}{\input{cdclt.pdf_t}}
+    \end{column}
+
+  \end{columns}
+
+\end{frame}

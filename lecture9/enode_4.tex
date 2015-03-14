@@ -1,0 +1,33 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{symbol} = [circle,draw=mydarkred!60,fill=mydarkred!20,thick, text width=10pt, align=center]
+\tikzstyle{term}   = [circle,draw=oproverblue!60,fill=oproverblue!20,thick, text width=10pt]
+\tikzstyle{list}   = [circle,draw=mydarkgreen!60,fill=mydarkgreen!20,thick, text width=10pt, align=center]
+
+\tikzstyle{edge}   = [->,>=stealth,thick]
+
+\node[symbol]   (s1) at (  0,  0)  {$\leq$};
+\node[symbol]   (s2) at (  0, -2)  {$x$};
+\node[symbol]   (s3) at (  1, -3)  {$y$};
+\node[term]     (t2) at (  1, -1)  {};
+\node[term]     (t3) at (  2, -2)  {};
+\node[term]     (t)  at (  1,  1)  {};
+\node[list]     (l2) at (  2,  0)  {};
+\node[list]     (l1) at (  3, -1)  {};
+\node[list]     (l0) at (  4, -2)  {-};
+
+\draw[edge]  (t) -- (s1);
+\draw[edge]  (t) -- (l2);
+\draw[edge] (l2) -- (t2);
+\draw[edge] (l2) -- (l1);
+\draw[edge] (l1) -- (t3);
+\draw[edge] (l1) -- (l0);
+\draw[edge] (t2) -- (l0);
+\draw[edge] (t3) -- (l0);
+\draw[edge] (t2) -- (s2);
+\draw[edge] (t3) -- (s3);
+
+\end{tikzpicture}

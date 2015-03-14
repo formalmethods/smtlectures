@@ -1,0 +1,15 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{vertex} = [circle,draw=oproverblue!60,fill=oproverblue!20,thick]
+\tikzstyle{edge}   = [->,>=stealth,thick]
+\tikzstyle{weight} = [color=oproveryellow]
+
+\node[vertex] (x) at (2,0)   {$x$};
+\node[vertex] (y) at (3.5,0) {$y$};
+
+\draw[edge] (x) -- node[weight] {$c$} (y);
+
+\end{tikzpicture}

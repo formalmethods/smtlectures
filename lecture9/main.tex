@@ -1,0 +1,41 @@
+\documentclass[xcolor=dvipsnames
+              %,handout
+              ]{beamer} 
+
+\input{theme}
+\input{macros}
+\input{packages}
+
+\title[\opensmt]{Satisfiability Modulo Theories\\ Lecture 9 - Extending \opensmt for fun and profit$^*$\\ {\tiny (slides revision: \today, \currenttime)}}
+\author[R. Bruttomesso]{\large Roberto Bruttomesso}
+\date{22 Dicembre 2011}
+\institute[SMT]{\large Seminario di Logica Matematica \\ (Corso Prof. Silvio Ghilardi)}
+\logo{ \vspace{-6pt} \includegraphics[scale=0.15]{imgs/logo-ita.png} }
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{A simple logic}
+\input{simple}
+
+\section{Phase 0 - Compiling \opensmt}
+\input{phase0}
+
+\section{Phase 1 - Setting up files and directories}
+\input{phase1}
+
+\section{Phase 2 - Connecting the \tsolver}
+\input{phase2}
+
+\section{Phase 3 - Implementing the \tsolver}
+\input{phase3}
+
+\input{final}
+
+\end{document}

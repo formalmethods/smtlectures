@@ -1,0 +1,17 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{vertex} = [circle,draw=oproverblue!60,fill=oproverblue!20,thick]
+\tikzstyle{edge}   = [->,>=stealth,thick]
+
+\node[vertex] (x) at ( 0, 0)  {$x$};
+\node[vertex] (y) at ( 2, 0)  {$y$};
+\node[vertex] (z) at ( 4, 0)  {$z$};
+
+\draw[edge] (x) -- (y);
+\draw[edge] (y) -- (z);
+\draw[edge] (z) to [out=225,in=-45] (x);
+
+\end{tikzpicture}

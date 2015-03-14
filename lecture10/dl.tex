@@ -1,0 +1,237 @@
+\section{Lecture 5 - A \tsolver for \Idl}
+
+\begin{frame}
+  \frametitle{A \tsolver for \Idl}
+
+  \scriptsize
+
+  The constraint $\quad x - y \leq c \quad$ says that 
+  
+  \begin{center}
+    ``the distance between $x$ and $y$ is at most $c$''
+  \end{center}
+
+  This can be encoded as $(x,y;c)$
+
+  \begin{center}
+    \input{arc}
+  \end{center}
+
+  \vfill
+  So, a set $\babst{\mu}$ can be encoded as a graph. Concrete example:
+
+  \begin{columns}
+
+    \begin{column}{.3\textwidth}
+      \ra{1.3}
+      $$
+      \begin{array}{rcr}
+	x - y & \leq & 8   \\
+	y - z & \leq & -1  \\
+	z - x & \leq & -6  \\
+	z - w & \leq & 2   \\
+	w - x & \leq & -10 \\
+	w - t & \leq & 0   \\
+	t - x & \leq & 3     
+      \end{array}
+      $$
+    \end{column}
+
+    \begin{column}{.6\textwidth}
+      \begin{center}
+	\input{example}
+      \end{center}
+    \end{column}
+
+  \end{columns}
+  \vfill
+  $G( V, E )$: $V = \{ x, y, z, w, t \}$, $E = \{ (x,y;8), (y,z;-1), (z,x;-6), (z,w;2), (w,x;-10), \ldots \}$ 
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{A \tsolver for \Idl}
+
+  \scriptsize
+
+    \begin{theorem}[Translation]
+      \label{the:idl}
+      $\babst{\mu}$ is \Idl-unsatisfiable 
+      \begin{center}
+      iff
+      \end{center}
+      there is a {\bf negative cycle} in the corresponging graph $G(V,E)$
+    \end{theorem}
+
+  \vfill
+  E.g.:
+
+  \begin{columns}
+
+    \begin{column}{.3\textwidth}
+      \ra{1.3}
+      $$
+      \begin{array}{rcr}
+	\coloneat{x - y}{1} & \coloneat{\leq}{1} & \coloneat{8}{1}   \\
+	\coloneat{y - z}{1} & \coloneat{\leq}{1} & \coloneat{-1}{1}  \\
+	\colfouat{z - x}{1} & \colfouat{\leq}{1} & \colfouat{-6}{1}  \\
+	\coloneat{z - w}{1} & \coloneat{\leq}{1} & \coloneat{2}{1}   \\
+	\coloneat{w - x}{1} & \coloneat{\leq}{1} & \coloneat{-10}{1} \\
+	\colfouat{w - t}{1} & \colfouat{\leq}{1} & \colfouat{0}{1}   \\
+	\colfouat{t - x}{1} & \colfouat{\leq}{1} & \colfouat{3}{1}     
+      \end{array}
+      $$
+    \end{column}
+
+    \begin{column}{.6\textwidth}
+      \begin{center}
+	\begin{overlayarea}{.5\textwidth}{3cm}
+	  %\only<2|handout:0>{\input{example}}
+	  \input{example_hl}
+	\end{overlayarea}
+      \end{center}
+    \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lecture 5 - Exercize 4}
+  
+  \scriptsize
+
+  Let's first recall the notion of {\bf minimality}
+  \begin{center}
+  A conflict $\nu^\Boo$ is {\bf minimal} if it does not contain redundant \tatoms
+  \end{center}
+  A \tatom $P$ in a conflict $\nu^\Boo$ is redundant if $\nu^\Boo \setminus \{ P \}$
+  is still a conflict
+  \vfill
+  So, how do we check, in general, that a conflict $\nu^\Boo = \{ P_1, \ldots, P_n \}$ is minimal ?
+  Iteratively for $i=1,\ldots,n$, we see if $\nu^\Boo \setminus \{ P_i \}$ is still a conflict.
+  \vfill\pause
+  In the case of difference logic every conflict is minimal {\bf by construction}. In fact $\nu^\Boo$ 
+  is a conflict if and only if it is a {\bf cycle} with negative sum.
+  \vfill
+  Doing $\nu^\Boo \setminus \{ P_i \}$ is equivalent to breaking the cycle, no matter what $P_i$.
+  Therefore all \tatoms are not redundant, and so conflicts are minimal.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lecture 5 - Exercize 5}
+
+  \scriptsize
+
+  Prove
+  \vfill
+
+  \begin{exampleblock}{Observation 2}
+    A set of constraints \\
+    $\{\ \colone{x_1} - x_2 \leq c_1,\ x_2 - x_3 \leq c_2,\ \ldots,\ x_{n-1} - \coltwo{x_n} \leq c_{n-1}\ \}$ \\
+    implies 
+    $\quad\quad\colone{x_1} - \coltwo{x_n} \leq c_n\quad\quad$ 
+    iff 
+    $\quad\quad c_1 + c_2 + \ldots c_{n-1} \leq c_n$
+  \end{exampleblock}
+
+  \vfill
+  using
+  \vfill
+
+  \begin{lemma}[Farka's Lemma for \Idl]
+    $\babst{\mu}$ is unsatisfiable iff there exists a subset 
+    $\babst{\nu} = \{\ \coltwo{x_1} - x_2 \leq c_1,\ x_2 - x_3 \leq c_2,\ \ldots,\ x_n - \coltwo{x_1} \leq c_n\ \}$ of $\babst{\mu}$
+    such that $c_1 + \ldots + c_n < 0$
+  \end{lemma}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lecture 5 - Exercize 5}
+
+  \scriptsize
+
+  \begin{exampleblock}{Observation 2}
+    A set of constraints \\
+    $\{\ \colone{x_1} - x_2 \leq c_1,\ x_2 - x_3 \leq c_2,\ \ldots,\ x_{n-1} - \coltwo{x_n} \leq c_{n-1}\ \}$ \\
+    implies 
+    $\quad\quad\colone{x_1} - \coltwo{x_n} \leq c_n\quad\quad$ 
+    iff 
+    $\quad\quad c_1 + c_2 + \ldots c_{n-1} \leq c_n$
+  \end{exampleblock}
+
+  \vfill
+  is better formalized as
+  \vfill
+
+  \begin{center}
+  $(\colone{x_1} - x_2 \leq c_1\ \wedge\ x_2 - x_3 \leq c_2\ \wedge\ \ldots\ \wedge\ x_{n-1} - \coltwo{x_n} \leq c_{n-1}) \rightarrow (\colone{x_1} - \coltwo{x_n} \leq d_n)$ \\
+  is valid iff \\
+  $c_1 + c_2 + \ldots c_{n-1} \leq d_n$
+  \end{center}
+
+  \begin{lemma}[Farka's Lemma for \Idl]
+    $\babst{\mu}$ is unsatisfiable iff there exists a subset 
+    $\babst{\nu} = \{\ \coltwo{x_1} - x_2 \leq c_1,\ x_2 - x_3 \leq c_2,\ \ldots,\ x_n - \coltwo{x_1} \leq c_n\ \}$ of $\babst{\mu}$
+    such that $c_1 + \ldots + c_n < 0$
+  \end{lemma}
+
+  \vfill
+  is better formalized as
+  \vfill
+
+  \begin{center}
+  $\colone{x_1} - x_2 \leq c_1\ \wedge\ x_2 - x_3 \leq c_2\ \wedge\ \ldots\ \wedge\ x_{n-1} - x_n \leq c_{n-1}\ \wedge\ x_n - \colone{x_1} \leq c_n$ \\
+  is unsatisfiable iff \\
+  $c_1 + c_2 + \ldots c_{n-1} + c_n < 0$
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lecture 5 - Exercize 5}
+
+  \scriptsize
+
+  \begin{center}
+  $(\colone{x_1} - x_2 \leq c_1\ \wedge\ x_2 - x_3 \leq c_2\ \wedge\ \ldots\ \wedge\ x_{n-1} - \coltwo{x_n} \leq c_{n-1}) \rightarrow (\colone{x_1} - \coltwo{x_n} \leq d_n)$ \\
+  is valid iff \\
+  $c_1 + c_2 + \ldots c_{n-1} \leq d_n$
+  \end{center}
+
+  \vfill
+  is equivalent to (using the well-known fact: $\varphi \rightarrow \psi$ is valid iff $\varphi \wedge \neg \psi$ is unsat)
+  \vfill
+
+  \begin{center}
+  $\colone{x_1} - x_2 \leq c_1\ \wedge\ x_2 - x_3 \leq c_2\ \wedge\ \ldots\ \wedge\ x_{n-1} - \coltwo{x_n} \leq c_{n-1}\ \wedge\ \neg(\colone{x_1} - \coltwo{x_n} \leq d_n)$ \\
+  is unsatisfiable iff \\
+  $c_1 + c_2 + \ldots c_{n-1} \leq d_n$
+  \end{center}
+
+  \vfill\pause
+  which is equivalent to (using the fact $\neg (x - y \leq c)\ \Longleftrightarrow\ y - x \leq - c - 1$)
+  \vfill
+
+  \begin{center}
+  $\colone{x_1} - x_2 \leq c_1\ \wedge\ x_2 - x_3 \leq c_2\ \wedge\ \ldots\ \wedge\ x_{n-1} - \coltwo{x_n} \leq c_{n-1}\ \wedge\ \coltwo{x_n} - \colone{x_1} \leq - d_n - 1$ \\
+  is unsatisfiable iff \\
+  $c_1 + c_2 + \ldots c_{n-1} \leq d_n$
+  \end{center}
+
+  \vfill\pause
+  which is equivalent to (using the fact $c \leq d\ \Longleftrightarrow\ c - d \leq 0\ \Longleftrightarrow\ c - d - 1 < 0$)
+  \vfill
+
+  \begin{center}
+  $\colone{x_1} - x_2 \leq c_1\ \wedge\ x_2 - x_3 \leq c_2\ \wedge\ \ldots\ \wedge\ x_{n-1} - x_n \leq c_{n-1} \wedge x_n - \colone{x_1} \leq - d_n - 1$ \\
+  is unsatisfiable iff \\
+  $c_1 + c_2 + \ldots c_{n-1} - d_n - 1 < 0$
+  \end{center}
+
+  \vfill
+  which is Farka's Lemma if we set $c_n \equiv - d_n - 1$
+
+\end{frame}

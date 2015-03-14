@@ -1,0 +1,238 @@
+\subsection{SMT-LIB}
+
+\begin{frame}[fragile]
+  \frametitle{SMT-LIB (v2) \url{http://www.smtlib.org}}
+
+  The SMT-LIB initiative 
+  \begin{itemize}
+    \item defines a standard input language for \smtsolvers
+    \item defines theories and logics in which \formulae can be written
+    \item collects benchmarks 
+  \end{itemize}
+
+  \vfill
+  \pause
+  The SMT-LIB language allows to write \formulae in a lisp-like format. E.g.:
+  \begin{verbatim}
+    (< (+ x y) 0)
+    (= (f x y) (g z))
+  \end{verbatim} 
+  stand for $x + y < 0$ and $f(x,y) = g(z)$ respectively
+
+  \vfill
+  \pause
+  An SMT-LIB file looks more similar to a {\bf set of commands} for
+  an \smtsolver, rather then a logic formula
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{SMT-LIB Theories}
+
+  \scriptsize
+
+  An SMT-LIB theory consists of some {\bf sorts}, (e.g., \SInt) 
+  and of some functions (e.g., $-,+$). 
+  Predicates are also considered functions, with codomain in \SBoo
+  (e.g., $<,\leq$). \pause For instance
+
+  \vfill
+  \begin{tabular}{cc}
+  \begin{minipage}{.4\textwidth}
+  \tiny
+  \begin{verbatim}
+     (theory Ints
+
+      :sorts ((Int 0))
+     
+      :funs ((NUMERAL Int)
+             (- Int Int)
+             (- Int Int Int :left-assoc)
+             (+ Int Int Int :left-assoc) 
+             (* Int Int Int :left-assoc)
+             (div Int Int Int :left-assoc)
+             (mod Int Int Int)
+             (abs Int Int)
+             (<= Int Int Bool :chainable)
+             (<  Int Int Bool :chainable)
+             (>= Int Int Bool :chainable)
+             (>  Int Int Bool :chainable)
+            )
+
+       [...]
+     )
+   \end{verbatim}
+   \end{minipage}
+   &
+   \begin{minipage}{.4\textwidth}
+     \tiny
+      \begin{verbatim}
+      (theory Core
+
+       :sorts ((Bool 0))
+
+       :funs ((true Bool)  
+              (false Bool)
+              (not Bool Bool)
+              (=> Bool Bool Bool :right-assoc)
+              (and Bool Bool Bool :left-assoc)
+              (or Bool Bool Bool :left-assoc)
+              (xor Bool Bool Bool :left-assoc)
+              (par (A) (= A A Bool :chainable))
+              (par (A) (distinct A A Bool :pairwise))
+              (par (A) (ite Bool A A A))
+             )
+
+       [...]
+      )
+      \end{verbatim}
+      \end{minipage} \\
+    \multicolumn{2}{c}{\tiny These definitions can be found at \url{www.smtlib.org}}
+  \end{tabular}
+  \vfill
+  \pause
+
+  The sorts and the function symbols declared in a theory are always {\bf interpreted}.
+  This means that a to specify a model for a formula $\varphi$, we just need to specify 
+  the assignment of the variables to the concrete values in the sorts.
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{SMT-LIB Logics}
+
+  \scriptsize
+  The difference between ``logic'' and ``theory'' might look very subtle. 
+  An SMT-LIB logic includes a theory definition, plus it describes some
+  restrictions on how \formulae can be built. \pause
+
+  \vfill
+  \hspace{-25pt}
+  \begin{tabular}{ccc}
+  \begin{minipage}{.4\textwidth}
+    \tiny
+    \begin{verbatim}
+    (logic QF_LIA
+     
+     :theories (Ints)
+     
+     :language 
+     "Closed quantifier-free formulas built 
+     over an arbitrary expansion of the
+     Ints signature with free constant symbols, 
+     but whose terms of sort Int are all linear, 
+     that is, have no occurrences of the function 
+     symbols *, /, div, mod, and abs, except as 
+     specified the :extensions attribute.
+     "
+      
+     :extensions
+     "Terms with _concrete_ coefficients are also 
+     allowed, that is, terms of the form c, (* c x), 
+     or (* x c)  where x is a free constant and c 
+     is a term of the form n or (- n) for some numeral n.
+     "
+    )
+    \end{verbatim}
+  \end{minipage}
+  & ~~~~ & \pause
+  \begin{minipage}{.4\textwidth}
+    \tiny
+    \begin{verbatim}
+    (logic QF_IDL
+
+     :theories (Ints)
+
+     :language
+     "Closed quantifier-free formulas with 
+     atoms of the form:
+     - q
+     - (op (- x y) n),
+     - (op (- x y) (- n)), or
+     - (op x y)
+     where
+     - q is a variable or free constant symbol of sort Bool,
+     - op is <, <=, >, >=, =, or distinct,
+     - x, y are free constant symbols of sort Int, 
+     - n is a numeral. 
+     "
+    )
+    \end{verbatim}
+  \end{minipage}
+  \end{tabular}
+
+  \vfill
+  \pause
+
+  In the following we will not be so strict, and we will not make any distinction 
+  between ``theories'' and ``logics'', calling both ``theories''. \pause 
+  For instance when we will say that we reason modulo the theory \Lia we mean 
+  that we are working with {\tt QF\_LIA} \formulae
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Writing an SMT-LIB file} 
+  \scriptsize
+
+  The logic can be specified with the command
+  \begin{verbatim}
+    (set-logic QF_LIA)
+  \end{verbatim}
+  \vfill
+  \pause
+  Variables are declared with
+  \begin{verbatim}
+    (declare-fun x ( ) Int)
+  \end{verbatim}
+  \vfill
+  \pause
+  A formula is specified with 
+  \begin{verbatim}
+    (assert (<= (+ x y) 0))
+  \end{verbatim}
+  \vfill
+  \pause
+  Asks the tool to compute satisfiability of assertions
+  \begin{verbatim}
+    (check-sat)
+  \end{verbatim}
+  \vfill
+  \pause
+  Asks the tool to return a model (in case of sat result)
+  \begin{verbatim}
+    (set-option :produce-models true)
+    ...
+    (get-value (x y))
+  \end{verbatim}
+  \vfill
+  \pause
+  Disable annoying printouts
+  \begin{verbatim}
+    (set-option :print-success false)
+  \end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Example}
+
+  \begin{verbatim}
+    (set-logic QF_LIA)
+    (declare-fun x ( ) Int)
+    (declare-fun y ( ) Int)
+    (declare-fun a ( ) Bool)
+    (assert (<= (+ x y) 0))
+    (assert (= x 0))
+    (assert (or (not a) (= x 1) (>= y 0)))
+    (assert (not (= (+ y 1) 0)))
+    (check-sat)
+    (exit)
+  \end{verbatim} 
+
+  which stands for the \Lia formula
+  $$
+  (x + y \leq 0) \wedge (x = 0) \wedge ((\neg a \vee (x = 1) \vee (y \geq 0)) \wedge \neg(y + 1 = 0)
+  $$
+
+\end{frame}

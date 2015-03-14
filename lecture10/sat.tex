@@ -1,0 +1,324 @@
+\section{Lecture 3 - SAT-Solving}
+
+\begin{frame}
+  \frametitle{SAT-Solving}
+
+  SAT-Solving is (the art of) finding the assignment satisfying all clauses
+  \vfill
+  The assignment evolves {\bf incrementally} by taking {\bf Decisions}, 
+  starting from empty $\{\ \}$, but it can be {\bf backtracked} if found wrong
+  \vfill
+  The evolution of the assignment can be represented as a {\bf tree}
+  \vfill
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+    $$
+      \begin{array}{l}
+      (\coltwoat{\neg a_1}{3-5} \vee a_3 \vee a_9) \\
+      (\coloneat{\coltwoat{\neg a_2}{4}}{5} \vee \neg a_3 \vee a_4) \\
+      (\coloneat{a_1}{3-5} \vee \coltwoat{\coloneat{a_2}{4}}{5}) \\
+      (\neg a_4 \vee a_5 \vee a_{10})
+      \end{array}
+    $$
+    \begin{overlayarea}{\textwidth}{.3cm}
+      \only<1|handout:0>{$\{\ \}$}
+      \only<2|handout:0>{$\{ \neg a_1 \}$}
+      \only<3|handout:0>{$\{ \neg a_1, \neg a_2 \}$}
+      \only<4|handout:0>{$\{ \neg a_1, a_2 \}$}
+      \only<5>{$\{ \ldots \}$}
+    \end{overlayarea}
+    \end{minipage}
+    & ~~~~ &
+    \begin{minipage}{.4\textwidth}
+    \begin{overlayarea}{\textwidth}{5cm}
+      %\only<1|handout:0>{\scalebox{.7}{\input{sat_search_1.pdf_t}}}
+      \only<1|handout:0>{\scalebox{.7}{\input{sat_search_1_1.pdf_t}}}
+      \only<2|handout:0>{\scalebox{.7}{\input{sat_search_1_2.pdf_t}}}
+      \only<3|handout:0>{\scalebox{.7}{\input{sat_search_1_3.pdf_t}}}
+      \only<4|handout:0>{\scalebox{.7}{\input{sat_search_1_4.pdf_t}}}
+      \only<5>{\scalebox{.7}{\input{sat_search_1_5.pdf_t}}}
+    \end{overlayarea}
+    \end{minipage}
+  \end{tabular}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{SAT-Solving}
+
+  There are assignments which can be trivially driven towards the right direction.
+  In the example below, given the current assignment, the third clause can be satisfied
+  only by setting $a_2 \mapsto \top$ 
+  \vfill
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+    $$
+      \begin{array}{l}
+      (\coltwoat{\neg a_1}{1-} \vee a_3 \vee a_9) \\
+      (\coloneat{\neg a_2}{2-} \vee \neg a_3 \vee a_4) \\
+      (\coloneat{a_1}{1-} \vee \coltwoat{a_2}{2-}) \\
+      (\neg a_4 \vee a_5 \vee a_{10})
+      \end{array}
+    $$
+    \begin{overlayarea}{\textwidth}{.3cm}
+      \only<1|handout:0>{$\{ \neg a_1 \}$}
+      \only<2->{$\{ \neg a_1, a_2 \}$}
+    \end{overlayarea}
+    \end{minipage}
+    & ~~~~ &
+    \begin{minipage}{.4\textwidth}
+    \begin{overlayarea}{\textwidth}{4cm}
+      \only<1|handout:0>{\scalebox{.7}{\input{sat_search_2_1.pdf_t}}}
+      \only<2->{\scalebox{.7}{\input{sat_search_2_2.pdf_t}}}
+    \end{overlayarea}
+    \end{minipage}
+  \end{tabular}
+  \vfill
+  \pause
+  \pause
+  This step is called {\bf Boolean Constraint Propagation} (BCP). It represents
+  a {\bf forced} deduction. It triggers whenever all literals but one are assigned $\bot$
+  $$
+  (\colone{\neg a_1} \vee \colone{a_2} \vee \colone{\neg a_3} \vee \colone{a_4} \vee \neg a_5)
+  $$
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{SAT-Solving}
+
+  {\bf Decision-level}: in an assignment, it is the number of decisions taken 
+  \vfill
+  Clearly, BCPs do not contribute to increase the decision level
+  \vfill
+  When necessary, we will indicate decision level on top of literals $\dec{a}{5}$ in the assignment 
+  \vfill
+  Example:
+  \begin{center}
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+      \vfill
+      $\{ \dec{a_{10}}{0}, \dec{\neg a_{1}}{1}, \dec{a_3}{2}, \dec{\neg a_4}{3}, \dec{a_5}{3} \}$
+      \vfill
+    \end{minipage}
+    & &
+    \begin{minipage}{.4\textwidth}
+      \scalebox{.4}{\input{sat_search_4.pdf_t}}
+    \end{minipage}
+  \end{tabular}
+  \end{center}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{SAT-Solving}
+  
+  The process of finding the satisfying assignment is called {\bf search}, and
+  in its basic version it evolves with {\bf Decisions}, {\bf BCPs}, and
+  {\bf backtracking}
+
+  \begin{center}
+  \scalebox{.5}{\input{sat_search_3.pdf_t}}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{SAT-Solving}
+
+  \scriptsize
+
+  Consider the following scenario before and after BCP
+  \vfill
+  \begin{tabular}{ccc}
+  \begin{minipage}{.4\textwidth}
+  $$
+  \begin{array}{l}
+    \ldots \\
+    (\colone{\neg a_{10}} \vee \colone{\neg a_1} \vee a_4) \\
+    (\colone{a_3} \vee \colone{\neg a_1} \vee a_5) \\
+    (\neg a_4 \vee a_6) \\
+    (\neg a_5 \vee \neg a_6) \\
+    \ldots \\
+    \\
+    \{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4} \}
+  \end{array}
+  $$
+  \end{minipage}
+  & ~~~~ &
+  \begin{minipage}{.5\textwidth}
+  $$
+  \begin{array}{l}
+    \ldots \\
+    (\colone{\neg a_{10}} \vee \colone{\neg a_1} \vee \coltwo{a_4}) \\
+    (\colone{a_3} \vee \colone{\neg a_1} \vee \coltwo{a_5}) \\
+    (\colone{\neg a_4} \vee \coltwo{a_6}) \\
+    (\colone{\neg a_5} \vee \colone{\neg a_6}) \\
+    \ldots \\
+    \\
+    \{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4}, \dec{a_4}{4}, \dec{a_5}{4}, \dec{a_6}{4}\}
+  \end{array}
+  $$
+  \end{minipage}
+  \end{tabular}
+  \vfill
+  BCP leads to a conflict, but, what is the {\bf reason} for it ?
+  Do $a_7$ and $a_2$ play any role ?
+  \vfill
+  Does it make sense to consider the assignments (which backtracking would produce) ?\\
+  $\{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{\neg a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4} \}$ ---
+  $\{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4} \}$ ---
+  $\{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{a_2}{3}, \dec{a_1}{4} \}$ \\
+  \vfill
+  No, because {\em whenever $a_{10}$, $\neg a_3$ is assigned, then $a_1$ must not be set to $\top$}.
+  This translates to an additional clause, which can be {\em learnt}, i.e., it can be added to the formula 
+  $$(\neg a_{10} \vee a_3 \vee \neg a_1)$$
+   
+\end{frame}
+
+\begin{frame}
+  \frametitle{SAT-Solving}
+
+  \scriptsize
+
+  In practice, we use {\bf resolution} steps to compute the learnt clause:
+  \begin{itemize}
+    \item we start from the clause with all literals to $\bot$ (conflicting clause)
+    \item iteratively, we take the clause that propagated the last literal on the trail
+	  and we apply resolution
+    \item we stop when only one literal from the current decision level is left in the clause 
+  \end{itemize}
+  \vfill
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+      \scalebox{.4}{\input{ca_7.pdf_t}}
+    \end{minipage}
+    & ~~~~~~~~~~ &
+    \begin{minipage}{.4\textwidth}
+      \begin{tabular}{ccl}
+	\hline
+	Trail & dl & Reason \\
+	\hline
+	$a_{10}$   & 0 & $( a_{10} )$ \\
+	$\neg a_3$ & 1 & Decision \\
+	$a_7$      & 2 & Decision \\
+	$\neg a_2$ & 3 & Decision \\
+	$a_1$      & 4 & Decision \\
+	$a_4$      & 4 & $(\neg a_{10} \vee \neg a_1 \vee a_4)$ \\
+	$a_5$      & 4 & $(a_3 \vee \neg a_1 \vee a_5)$ \\
+	$a_6$      & 4 & $(\neg a_4 \vee a_6)$ \\
+	\hline
+      \end{tabular}
+      \medskip \\
+      $\{ \dec{a_{10}}{0}, \dec{\neg a_3}{1}, \dec{a_7}{2}, \dec{\neg a_2}{3}, \dec{a_1}{4}, \dec{a_4}{4}, \dec{a_5}{4}, \dec{a_6}{4}\}$
+    \end{minipage}
+  \end{tabular}
+  \vfill
+  We say that $(\neg a_{10} \vee a_3 \vee \neg a_1)$ is the {\bf conflict clause} and it is the one we learn
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lecture 3 - Exercize 1}
+
+  \scriptsize
+
+  Consider the following clause set and assignment
+  $$
+  \begin{array}{l}
+  (\neg a_1 \vee a_2) \\
+  (\neg a_1 \vee a_3 \vee a_9) \\
+  (\neg a_2 \vee \neg a_3 \vee a_4) \\
+  (\neg a_4 \vee a_5 \vee a_{10}) \\
+  (\neg a_4 \vee a_6 \vee a_{11}) \\
+  (\neg a_5 \vee \neg a_6) \\
+  (a_1 \vee a_7 \vee \neg a_{12}) \\
+  (a_1 \vee a_8) \\
+  (\neg a_7 \vee \neg a_8 \vee \neg a_{13}) \\
+  \ldots \\ \\
+  \{ \dec{\neg a_9}{1}, \dec{a_{12}}{2}, \dec{a_{13}}{2}, \dec{\neg a_{10}}{3}, \dec{\neg a_{11}}{3}, \ldots, \dec{a_1}{6}\}
+  \end{array}
+  $$
+  \vfill
+  \begin{itemize}
+    \item Find the correct conflict clause
+    \item Find the correct decision level to backtrack
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lecture 3 - Exercize 1}
+
+  \scriptsize
+
+  \scalebox{.8}{
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+     $$
+     \begin{array}{l}
+     (\neg a_1 \vee a_2) \\
+     (\neg a_1 \vee a_3 \vee a_9) \\
+     (\neg a_2 \vee \neg a_3 \vee a_4) \\
+     (\neg a_4 \vee a_5 \vee a_{10}) \\
+     (\neg a_4 \vee a_6 \vee a_{11}) \\
+     (\neg a_5 \vee \neg a_6) \\
+     (a_1 \vee a_7 \vee \neg a_{12}) \\
+     (a_1 \vee a_8) \\
+     (\neg a_7 \vee \neg a_8 \vee \neg a_{13})
+     \end{array}
+     $$
+    \end{minipage}
+    & ~~~~~~ &
+    \begin{minipage}{.4\textwidth}
+      \begin{tabular}{ccl}
+	\hline
+	Trail & dl & Reason \\
+	\hline
+	$\neg a_{9}$  & 1 & Decision \\
+	$a_{12}$      & 2 & Decision \\
+	$a_{13}$      & 2 & (some clause) \\
+	$\neg a_{10}$ & 3 & Decision \\
+	$\neg a_{11}$ & 3 & (some clause) \\
+	\ldots \\
+	$a_1$         & 6 & Decision \\
+	\hline 
+	$a_2$         & 6 & $(\neg a_1 \vee a_2)$ \\
+	$a_3$         & 6 & $(\neg a_1 \vee a_3 \vee a_9)$ \\
+	$a_4$         & 6 & $(\neg a_2 \vee \neg a_3 \vee a_4)$ \\
+	$a_5$         & 6 & $(\neg a_4 \vee a_5 \vee a_{10})$ \\
+	$a_6$         & 6 & $(\neg a_4 \vee a_6 \vee a_{11})$ \\
+	\hline
+      \end{tabular}
+      \bigskip \\
+      $\{ \dec{\neg a_9}{1}, \dec{a_{12}}{2}, \dec{a_{13}}{2}, \dec{\neg a_{10}}{3}, \dec{\neg a_{11}}{3}, \ldots, \dec{a_1}{6} \}$
+    \end{minipage}
+  \end{tabular}}
+
+  \vfill
+  \pause
+
+  \scalebox{.7}{
+  \begin{minipage}{\textwidth}
+    \begin{prooftree}
+    \AxiomC{$(\neg a_5 \vee \neg a_6)$}
+    \AxiomC{$(\neg a_4 \vee a_6 \vee a_{11})$}
+    \BinaryInfC{$(\neg a_5 \vee \neg a_4 \vee a_{11})$}
+    \AxiomC{$(\neg a_4 \vee a_5 \vee a_{10})$}
+    \BinaryInfC{$(\neg a_4 \vee a_{10} \vee a_{11})$}
+    \AxiomC{$(\neg a_2 \vee a_3 \vee a_4)$}
+    \BinaryInfC{$(\neg a_2 \vee \neg a_3 \vee a_{10} \vee a_{11})$}
+    \AxiomC{$(\neg a_2 \vee a_3 \vee a_9)$}
+    \BinaryInfC{$(\neg a_2 \vee a_9 \vee a_{10} \vee a_{11})$}
+    \AxiomC{$(\neg a_1 \vee a_2)$}
+    \BinaryInfC{$(\neg a_1 \vee a_9 \vee a_{10} \vee a_{11})$}
+    \end{prooftree}
+  \end{minipage}
+  }
+
+  \vfill
+  \pause
+  Conflict clause: $(\neg a_1 \vee a_9 \vee a_{10} \vee a_{11})$ \pause \\
+  Backtracking level: 3
+
+\end{frame}

@@ -1,0 +1,143 @@
+\subsection{CDCL(\T)}
+
+\begin{frame}
+  \frametitle{CDCL(\T)}
+
+  \scriptsize
+
+  The interaction described naturally falls within the
+  CDCL style, enriched with a \tsolver
+      $$\varphi \equiv 
+      (x=3 \vee \neg (x<3))\ \swedge\
+      (x=3 \vee \neg (x>3))\ \swedge\
+      (x>3 \vee \neg (x<3))\ \swedge\
+      (x>3 \vee \neg (x=3))$$ 
+  \vfill
+  \begin{columns}
+
+    \begin{column}{.5cm}
+      \vspace{-165pt}
+      $\babst{\varphi} \equiv$
+    \end{column}
+
+    \begin{column}{5cm}
+      $(\coltwoat{\coloneat{a_1}{8-13}}{2-6} \vee \coltwoat{\neg a_2}{9-13})$ \\
+      $(\coltwoat{\coloneat{a_1}{8-13}}{2-6} \vee \coltwoat{\coloneat{\neg a_3}{3-6}}{10-13})$ \\
+      $(\coloneat{\coltwoat{a_3}{3-6}}{10-13} \vee \coltwoat{\neg a_2}{9-13})$ \\
+      $(\coloneat{\coltwoat{a_3}{3-6}}{10-13} \vee \coloneat{\coltwoat{\neg a_1}{8-13}}{2-6})$ \\
+      \onslide<6->{$(\coloneat{\coltwoat{\neg a_1}{10-13}}{6} \vee \coltwoat{\coloneat{\neg a_3}{6}}{10-13})$ \\}
+      \onslide<7->{$(\coltwoat{\neg a_1}{8-13})$ \\}
+      \onslide<13->{$(\coloneat{a_1}{13} \vee \coloneat{a_2}{13} \vee \coloneat{a_3}{13})$ \\}
+      \onslide<14->{$(\ )$ \\}
+      \bigskip
+      $a_1 \equiv x=3$ \\
+      $a_2 \equiv x<3$ \\
+      $a_3 \equiv x>3$ \\
+      \bigskip
+      $\babst{\mu}$: $\{\ \only<2-6|handout:0>{a_1}\only<3-6|handout:0>{, a_3}\only<8-13|handout:0>{\neg a_1}\only<9-13|handout:0>{, \neg a_2}\only<10-13|handout:0>{, \neg a_3}\ \}$ \\
+      \bigskip
+      \begin{tabular}{rl}
+      SAT-solver: & \only<1,4-5,11-12|handout:0>{Idle}\only<2|handout:0>{Decision}\only<3,8-10|handout:0>{BCP}\only<6,13|handout:0>{Learn}\only<7,14|handout:0>{Conf. Analysis, Backtrack}\only<15>{UNS} \\
+        \tsolver: & \only<1,2,3,6-10,13->{Idle}\only<4,5,11,12|handout:0>{Is $\babst{\mu}$ \T-satisfiable ?}\only<5,12|handout:0>{ NO}
+      \end{tabular}
+    \end{column}
+
+    \begin{column}{5cm}
+      \begin{overlayarea}{5cm}{5cm}
+	\only<1|handout:0>{\scalebox{.6}{\input{search_0.pdf_t}}}
+	\only<2|handout:0>{\scalebox{.6}{\input{search_1.pdf_t}}}
+	\only<3,4,5|handout:0>{\scalebox{.6}{\input{search_2.pdf_t}}}
+	\only<6,7|handout:0>{\scalebox{.6}{\input{search_3.pdf_t}}}
+	\only<8|handout:0>{\scalebox{.6}{\input{search_4.pdf_t}}}
+	\only<9|handout:0>{\scalebox{.6}{\input{search_5.pdf_t}}}
+	\only<10-12|handout:0>{\scalebox{.6}{\input{search_6.pdf_t}}}
+	\only<13->{\scalebox{.6}{\input{search_7.pdf_t}}}
+      \end{overlayarea}
+    \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Early Pruning}
+
+  \scriptsize
+
+  Notice that there is no need to wait until a (partial) Boolean model is found to
+  call \tsolver 
+  \vfill
+  Suppose that the first Boolean model is 
+  $$\babst{\mu} = \{ x < y, x = y, \ldots (\mbox{ 1000 other constraints }) \}$$ 
+  This Boolean model is \T-unsatisfiable already at $\{ x < y, x = y \}$, and could have been stopped much earlier
+  \vfill
+  \pause
+  \begin{center}
+  \scalebox{.3}{\input{ep.pdf_t}}
+  \end{center}
+  \vfill
+  \pause
+  However, do not call \tsolver too often, as it may slow things down
+  \vfill
+  Good heuristic: call \tsolver just after any BCP
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The CDCL Procedure}
+
+  \scriptsize
+
+  \vfill
+
+  \begin{tabbing}
+  as \= a \= a \= a \= as \= asdfsdfasdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+  \> $dl = 0$; $trail = \{\ \}$;                              \> \> \> \> \> // Decision level, assignment\\ \\
+  \> while ( $true$ ) \\ \\
+  \> \> if ( BCP( ) == conflict )                                \> \> \> \> // Do BCP until possible \\
+  \> \> \> if ( $dl == 0$ ) return $unsat$;                         \> \> \> // Unresolvable conflict \\
+  \> \> \> $C,dl =$ {\sc AnalyzeConflict}( );                           \> \> \> // Compute conf. clause, and dec. level \\
+  \> \> \> {\sc AddClause}( $C$ );                                      \> \> \> // Add $C$ to clause database \\
+  \> \> \> {\sc BacktrackTo}( $dl$ );                                   \> \> \> // Backtracking (shrinks $trail$) \\
+  \> \> else \\
+  \> \> \> if ( ``all variables assigned'' ) return $sat$;          \> \> \> // $trail$ holds satisfying assignment \\
+  \> \> \> $l = $ {\sc Decision}( );                                      \> \> \> // Do another decision \\
+  \> \> \> $trail = trail \cup \{ l \}$ \\                          
+  \> \> \> $dl = dl + 1$;                                           \> \> \> // Increase decision level \\
+  \end{tabbing}
+
+  \vfill
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The (basic) CDCL(\T) Procedure}
+
+  \scriptsize
+
+  \vfill
+
+  \begin{tabbing}
+  as \= a \= a \= a \= as \= asdfsdfasdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+  \> \textcolor{red}{class {\sc Theory};}                         \> \> \> \> \> // \tsolver \\
+  \\
+  \> $dl = 0$; $trail = \{\ \}$;                                  \> \> \> \> \> // Decision level, assignment\\ \\
+  \> while ( $true$ ) \\ \\
+  \> \> if ( {\sc BCP}( ) == conflict )                                    \> \> \> \> // Do BCP until possible \\
+  \> \> \> if ( $dl == 0$ ) return $unsat$;                             \> \> \> // Unresolvable conflict \\
+  \> \> \> $C,dl =$ {\sc AnalyzeConflict}( );                           \> \> \> // Compute conf. clause, and dec. level \\
+  \> \> \> {\sc AddClause}( $C$ );                                      \> \> \> // Add $C$ to clause database \\
+  \> \> \> {\sc BacktrackTo}( $dl$ );                                   \> \> \> // Backtracking (shrinks $trail$) \\
+  \> \> \textcolor{red}{else if ( {\sc Theory.Check}( $trail$ ) == $unsat$ )}               \> \> \> \> // \tsolver check \\
+  \> \> \> \textcolor{red}{{\sc AddClause}( $\neg trail$ );}                             \> \> \> // Add clause that is now unsat \\
+  \> \> else \\
+  \> \> \> if ( ``all variables assigned'' ) return $sat$;              \> \> \> // $trail$ holds satisfying assignment \\
+  \> \> \> $l = $ {\sc Decision}( );                                    \> \> \> // Do another decision \\
+  \> \> \> $trail = trail \cup \{ l \}$ \\                          
+  \> \> \> $dl = dl + 1$;                                               \> \> \> // Increase decision level \\
+  \end{tabbing}
+
+  \vfill
+
+\end{frame}

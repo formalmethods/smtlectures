@@ -1,0 +1,78 @@
+:smt (define-type locations (subrange 1 4))
+:smt (define-type counter (subrange 1 2))
+
+:local l locations
+:global c counter
+
+:initial
+:var x
+:cnj (= l[x] 1) (= c[x] 1)
+
+:unsafe
+:var z1
+:var z2
+:cnj (= l[z1] 3) (= l[z2] 3)
+
+:comment TRANSITION 1: 
+:comment if ( l[x] == 1 )
+:comment   l'[x] = 2
+:comment   c' = c
+:transition
+:var x
+:var j
+:guard (= l[x] 1)
+:numcases 2
+:case (= x j)
+ :val 2
+ :val c[j]
+:case (not (= x j))
+ :val l[j]
+ :val c[j]
+
+:comment TRANSITION 2:
+:comment if ( l[x] == 2 && c == 0 )
+:comment   l'[x] = 3
+:comment   c' = 1
+:transition
+:var x
+:var j
+:guard (= l[x] 2) (= c[x] 1)
+:numcases 2
+:case (= x j)
+ :val 3
+ :val 2
+:case (not (= x j))
+ :val l[j]
+ :val 2
+
+:comment TRANSITION 3:
+:comment if ( l[x] == 3 && c == 1 )
+:comment   l'[x] = 4
+:comment   c' = 0
+:transition
+:var x
+:var j
+:guard (= l[x] 3) (= c[x] 2)
+:numcases 2
+:case (= x j)
+ :val 4
+ :val 1
+:case (not (= x j))
+ :val l[j]
+ :val 1
+
+:comment TRANSITION 4:
+:comment if ( l[x] == 4 )
+:comment   l'[x] = 4
+:comment   c' = c
+:transition
+:var x
+:var j
+:guard (= l[x] 4)
+:numcases 2
+:case (= x j)
+ :val 1
+ :val c[j]
+:case (not (= x j))
+ :val l[j]
+ :val c[j]

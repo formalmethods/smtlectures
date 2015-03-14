@@ -1,0 +1,41 @@
+\documentclass[xcolor=dvipsnames
+              %,handout
+              ]{beamer} 
+
+\input{theme}
+\input{macros}
+\input{packages}
+
+\title[Bit-Vectors]{Satisfiability Modulo Theories\\ Lezione 2 - An Eager Approach: Solving Bit-Vectors \\ {\tiny (slides revision: \today, \currenttime)}}
+\author[R. Bruttomesso]{\large Roberto Bruttomesso}
+\date{27 Ottobre 2011}
+\institute[SMT]{\large Seminario di Logica Matematica \\(Corso Prof. Silvio Ghilardi)}
+\logo{ \vspace{-6pt} \includegraphics[scale=0.15]{imgs/logo-ita.png} }
+
+\begin{document}
+
+\frame{\titlepage}
+
+\input{recall}
+
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{Bit-Vectors}
+
+\input{intro}
+\input{examples}
+
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{Solving Bit-Vectors}
+
+\input{bitblasting}
+\input{simplification}
+
+\end{document}

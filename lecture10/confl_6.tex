@@ -1,0 +1,25 @@
+
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{vertex} = [rectangle,draw=oproverblue!60,fill=oproverblue!20,thick]
+
+\node[vertex] (y) at  (  2, 0)  {$y$};
+\node[vertex] (x) at  (  4, 0)  {$x$};
+\node[vertex] (w) at  (  6, 0)  {$w$};
+\node[vertex] (fx) at (  3, 1.5)  {$f(x)$};
+\node[vertex] (fw) at (  5, 1.5)  {$f(w)$};
+\node[vertex] (z) at  (  1, 1.5)  {$z$};
+\node[vertex] (a) at  (  7, 1.5)  {$a$};
+
+\draw[->] (y)  -- node {$x\!=\!y$} (x);
+\draw[->] (w)  -- node[above] {$y\!=\!w$} (x);
+\draw[->] (z)  -- node {$f(x)\!=\!z$} (fx);
+\path (x)  edge [loop above] (x);
+\path (fw)  edge [loop above] (fw);
+\draw[->] (fx) -- (fw);
+\draw[->] (a) -- node[above] {$f(w)\!=\!a$} (fw);
+
+\end{tikzpicture}

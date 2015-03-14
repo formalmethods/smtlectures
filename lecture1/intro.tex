@@ -1,0 +1,193 @@
+\subsection{Introduction}
+
+\begin{frame}
+  \frametitle{Intro}
+
+\scriptsize
+
+Satisfiability Modulo Theories, SMT, studies {\bf practical methods} 
+to {\bf solve} logical \formulae 
+
+\vfill
+\pause
+These \formulae are defined/interpreted modulo a {\bf background theory},
+such as Linear Real Arithmetic (\Lra), Arrays (\Arrays), Bit-Vectors (\Bitvectors), etc.
+
+\vfill
+\pause
+For instance, we want to determine the satisfiability modulo \Lra of
+\begin{eqnarray}
+\label{eq:example1}
+(x + y \leq 0) \swedge (x = 0) \swedge (\neg a \svee (x = 1) \svee (y \geq 0))
+\end{eqnarray}
+where $x, y$ are arithmetic variables, while $a$ is a Boolean variable. \pause
+Intuitively, (\ref{eq:example1}) is satisfiable iff we can find values
+for $x$ and $y$ in \Rea and for $a$ in \Boo such that it evaluates to $\top$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Definitions (syntax)}
+
+  In SMT a theory \T is defined over a {\bf signature} $\Sigma$, which
+  is a set of function and predicate symbols such as $\{ 0, 1, \ldots, +,-, \ldots, \leq \}$.
+  The equality symbol $=$ is assumed to be included in every signature. 
+  \pause
+  \vfill
+  Variables and function symbols in $\Sigma$ can be used to build {\bf theory-terms}
+  (\tterm): a \tterm is either a variable or, recursively, an application
+  of a function symbol in $\Sigma$ to terms
+  \pause
+  \vfill
+  Predicate symbols in $\Sigma$ can be used to build {\bf theory-atom}s
+  (\tatom): a \tatom is the application of a predicate symbol in $\Sigma$ 
+  to \tterms
+  \pause
+  \vfill
+  A {\bf theory-literal} (\tlit) is either a \tatom or its negation
+  \pause
+  \vfill
+  A formula is any Boolean combination of \tatoms and Boolean variables
+\end{frame}
+
+\begin{frame}
+  \frametitle{Definitions (semantic)}
+
+  \scriptsize
+
+  In SMT the {\bf interpretation} of the symbols in $\Sigma$
+  is fixed, and it corresponds to the usual semantic of the operators.
+  For instance, in \Lia (Linear Integer Arithmetic):
+  \begin{itemize}
+  \item numerals are mapped to the corresponding value in $\Int$
+  \item $+$ is interpreted as the function
+        $$
+        \begin{array}{l}
+          (0,0) \mapsto 0 \\
+          (0,1) \mapsto 1 \\
+          \ldots
+        \end{array}
+        $$  
+  \end{itemize}
+
+  \pause
+  \vfill
+
+  The only unspecified entities are variables, for which we have to build 
+  an {\bf assignment}, a mapping from variables to concrete values in $\Int$
+
+  \vfill
+  \pause
+
+  Now everything is specified and we can evaluate \tterms, \tatoms and 
+  \formulae. For instance, the \tatom 
+  $$
+    (x + y \leq 0) \swedge (x = 0) \swedge (\neg a \svee (x = 1) \svee (y \geq 0))
+  $$
+  evaluates to $\top$ under the assignment $\{ x \mapsto 0, y \mapsto 0, a \mapsto \bot \}$, and it
+  evaluates to $\bot$ under the assignment $\{ x \mapsto 5, y \mapsto -10, a \mapsto \bot \}$
+
+  \vfill
+  \pause
+
+  We say that a formula $\varphi$ is satisfiable modulo \T, if there is an
+  assignment $M$ that evaluates $\varphi$ to $\top$. In that case we say that
+  $M$ is a {\bf model} 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Solving SMT \formulae by reduction to SAT}
+
+  \scriptsize
+
+  Approaches to solve SMT \formulae are based on the observation
+  that SMT can be {\bf reduced} to SAT, i.e., the purely Boolean
+  Satisfiability Problem
+  \vfill
+  \pause
+  Consider for instance the \Lia formula
+  $$
+  \varphi \equiv (x - y \leq 0) \wedge (y - z \leq 0) \wedge ((z - x \leq -1) \vee (z - x \leq -2))
+  $$
+  We may use a Boolean variable $a$ to mean ``$x - y \leq 0$'' evaluates to $\top$
+  in the model. Similarly we could use $b, c, d$ for the other \tatoms.
+  \vfill
+  \pause
+  First of all, we notice that it {\bf does not} hold in \Lia that
+  $$ x - y \leq 0\quad\quad  y - z \leq 0\quad\quad z - x \leq -1 $$
+  evaluate to $\top$ {\bf at the same time}, because this is not possible in \Lia. \pause
+  This translates to the Boolean relation 
+  $$ \neg( a \wedge b \wedge c )$$ \pause
+  Similarly we may derive 
+  $$ \neg( a \wedge b \wedge d )\quad\quad \neg( \neg a \wedge \neg b \wedge \neg c )\quad\quad \neg( \neg a \wedge \neg b \wedge \neg d )$$ \pause
+  \vfill
+  Moreover, because of the ``structure'' of $\varphi$, it holds that 
+  $$ a \wedge b \wedge (c \vee d)$$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Solving SMT \formulae by reduction to SAT}
+
+  \scriptsize
+
+  $$
+  \varphi \equiv (x - y \leq 0) \wedge (y - z \leq 0) \wedge ((z - x \leq -1) \vee (z - x \leq -2))
+  $$
+
+  $$
+  \begin{array}{l}
+  a \ \ \mbox{ represents } \ \ x - y \leq 0 \\
+  b \ \ \mbox{ represents } \ \ y - z \leq 0 \\
+  c \ \ \mbox{ represents } \ \ z - x \leq -1 \\
+  d \ \ \mbox{ represents } \ \ z - x \leq -2
+  \end{array}
+  $$
+  \vfill
+  \pause
+  Putting all the conditions together we get the Boolean formula
+  $$ 
+  \psi \equiv\ a \wedge b \wedge (c \vee d)\ \wedge\ \neg( a \wedge b \wedge c )\ \wedge\ \neg( a \wedge b \wedge d )\ \wedge\
+  \neg( \neg a \wedge \neg b \wedge \neg c )\ \wedge\ \neg( \neg a \wedge \neg b \wedge \neg d )
+  $$ \pause
+  Because of our translation, we have that $\varphi$ is \Lia-satisfiable if and only if $\psi$ is
+  satisfiable. This is true because
+  \begin{enumerate}
+    \item we have {\bf exhaustively} encoded incompatible relations between \tatoms 
+    \item we have encoded the structure of $\varphi$
+  \end{enumerate} \pause
+  Therefore we may run any off-the-shelf \satsolver to determine the satisfiability of $\psi$ 
+  (and therefore that of $\varphi$)
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exercizes}
+
+  \begin{enumerate}
+    \item Check that $\varphi$ is \Lia-unsatisfiable, and that $\psi$ is also unsatisfiable
+
+    \vfill
+
+    \item Check that 
+	  $\neg( \neg a \wedge \neg b \wedge \neg c )$ and $\neg( \neg a \wedge \neg b \wedge \neg d )$
+	  are actually redundant in $\psi$. Why it is so ?
+
+    \vfill
+
+    \item Substitute $z - x \leq -2$ with $z - x \leq 2$ into $\varphi$, recompute
+	  the correct $\psi$, and check that $\varphi$ is \Lia-satisfiable and that
+	  $\psi$ is also satisfiable
+
+    \vfill
+
+    \item Prove that the encoding into SAT is correct and complete, i.e., that if
+    \begin{enumerate}[$(i)$]
+      \item we have {\bf exhaustively} encoded incompatible relations between \tatoms 
+      \item we have encoded the structure of $\varphi$
+    \end{enumerate} 
+	  then $\varphi$ is \T-satisfiable if and only if $\psi$ is satisfiable
+
+  \end{enumerate}
+
+\end{frame}

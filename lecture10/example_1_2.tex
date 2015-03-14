@@ -1,0 +1,22 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{vertex} = [rectangle,draw=oproverblue!60,fill=oproverblue!20,thick]
+
+\node[vertex] (x) at ( 0, 0)  {$\nod{x}{0}{1}$};
+\node[vertex] (y) at ( 2, 0)  {$\nod{y}{1}{2}$};
+\node[vertex] (z) at ( 4, 0)  {$\nod{z}{0}{1}$};
+\node[vertex] (w) at ( 6, 0)  {$\nod{w}{0}{1}$};
+\node[vertex] (a) at ( 8, 0)  {$\nod{a}{0}{1}$};
+\node[vertex] (b) at (10, 0)  {$\nod{b}{0}{1}$};
+
+\draw[->] (x) -- (y);
+\path (y) edge [loop above] (y);
+\path (z) edge [loop above] (z);
+\path (w) edge [loop above] (w);
+\path (a) edge [loop above] (a);
+\path (b) edge [loop above] (b);
+
+\end{tikzpicture}

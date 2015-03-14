@@ -1,0 +1,41 @@
+diff -r opensmt_class/configure.ac opensmt_final/configure.ac
+228a229
+> -I\${top_srcdir}/src/tsolvers/sosolver \\\
+254a256
+> 		  src/tsolvers/sosolver/Makefile \
+diff -r opensmt_class/src/api/OpenSMTContext.C opensmt_final/src/api/OpenSMTContext.C
+87a88
+>   else if ( strcmp( str, "QF_SO" )     == 0 ) l = QF_SO;
+diff -r opensmt_class/src/common/Global.h opensmt_final/src/common/Global.h
+195a196
+>   , QF_SO         // Strict Orders
+310a312
+>   else if ( l == QF_SO )     return "QF_SO";
+343a346
+> using opensmt::QF_SO;
+diff -r opensmt_class/src/egraph/EgraphSolver.C opensmt_final/src/egraph/EgraphSolver.C
+28a29
+> #include "SOSolver.h"
+852a854,867
+>   else if ( config.logic == QF_SO )
+>   {
+>     tsolvers.push_back( new SOSolver( tsolvers.size( )
+> 	                            , "Simple Order Solver"
+> 				    , config
+> 				    , *this
+> 				    , sort_store
+> 				    , explanation
+> 				    , deductions
+> 				    , suggestions ) );
+> #ifdef STATISTICS
+>     tsolvers_stats.push_back( new TSolverStats( ) );
+> #endif
+>   }
+diff -r opensmt_class/src/tsolvers/Makefile.am opensmt_final/src/tsolvers/Makefile.am
+1c1
+< SUBDIRS = axdiffsolver bvsolver dlsolver emptysolver lrasolver ctsolver rdsolver
+---
+> SUBDIRS = axdiffsolver bvsolver dlsolver emptysolver lrasolver ctsolver rdsolver sosolver
+13a14
+> 			sosolver/libsosolver.la \
+Only in opensmt_final/src/tsolvers: sosolver

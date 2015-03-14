@@ -1,0 +1,93 @@
+\begin{frame}
+  \frametitle{Handling Functions}
+
+  \scriptsize
+
+  Let's consider also function symbols. We want to extend Union-Find
+  to handle functions as well. For instance 
+  $$x=y\ \wedge\ f(x)=z\ \wedge\ f(y)=w$$
+  should result into
+  $$
+  \{\ x,\ y\ \}\quad\quad\quad\quad\{\ f(x),\ f(y),\ z,\ w\ \}
+  $$
+  \vfill\pause
+  We don't see the details, but just a generic algorithm. Let 
+  $\varphi^+$ be a conjunction of positive equalities between \Uf-terms
+  \begin{tabbing}
+  asd \= as \= as \= as \= as \kill
+  1 \> {\bf procedure} Congruence-Closure( $\varphi^+$ ) \\
+  2 \> $pending = \varphi^+$ \\
+  3 \> while ( $pending$ not empty ) \\  
+  4 \> \> $(s = t) = pending$.pop( ) \\
+  5 \> \> $s =$ Find( $s$ ) \\
+  6 \> \> $t =$ Find( $t$ ) \\
+  7 \> \> Union( $s$, $t$ ) \\
+  8 \> \> for each pair $p$, $q$ such that\\
+    \> \> \> \> 1. Find( $p$ ) $\not\equiv$ Find( $q$ ) \\
+    \> \> \> \> 2. $p \equiv f( s_1, \ldots, s_n )$,\ \ $q \equiv f( t_1, \ldots, t_n )$ \\
+    \> \> \> \> 3. Find($s_1$)=Find($t_1$),\ldots,Find($s_n$)=Find($t_n$) \\
+  9 \> \> \> $pending$.push( $p=q$ ) \\
+ \end{tabbing}
+ \vfill\pause
+ After Congruence-Closure we have that
+ \begin{center}
+   $s$, $t$ are in the same partition iff $\varphi^+ \Rightarrow s=t$
+ \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example}
+
+  \scriptsize
+
+ $\varphi^+ \equiv f(a,b)=a\ \wedge\ f(f(a,b),b)=c$
+ \vfill
+ $pending = \{\quad f(a,b)=a,\quad f(f(a,b),b)=c\quad \}$ 
+ $$
+ \{\ a\ \}\quad\quad\{\ b\ \}\quad\quad\{\ c\ \}\quad\quad\{\ f(a,b)\ \}\quad\quad\{\ f(f(a,b),b)\ \}
+ $$
+ \vfill
+ $pending = \{\quad f(f(a,b),b)=c\quad f(f(a,b),b)=f(a,b)\quad \}$ 
+ $$
+ \{\ a, f(a,b)\ \}\quad\quad\{\ b\ \}\quad\quad\{\ c\ \}\quad\quad\{\ f(f(a,b),b)\ \}
+ $$
+ \vfill
+ $pending = \{\quad f(f(a,b),b)=f(a,b)\quad \}$ 
+ $$
+ \{\ a, f(a,b)\ \}\quad\quad\{\ b\ \}\quad\quad\{\ f(f(a,b),b), c\ \}
+ $$
+ \vfill
+ $pending = \{ \}$ 
+ $$
+ \{\ a, f(a,b), f(f(a,b),b), c\ \}\quad\quad\{\ b\ \}
+ $$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Solving}
+
+  Finally we are ready to check satisfiability of $\varphi$. As before
+  $\varphi \equiv \varphi^+ \wedge \varphi^-$. Negated equalities can
+  be checked after building equivalence classes
+  \vfill
+  \begin{tabbing}
+  asd \= as \= as \= as \= as \kill
+  1 \> {\bf procedure} Check( $\varphi^+$, $\varphi^-$ ) \\
+  2 \> Congruence-Closure( $\varphi^+$ ) \\
+  3 \> for each $s \not= t$ in $\varphi^-$ \\
+  4 \> \> $s' =$ Find( $s$ ) \\
+  5 \> \> $t' =$ Find( $t$ ) \\
+  6 \> \> if ( $s' \equiv t'$ ) \\
+  7 \> \> \> return $unsat$ \\
+  8 \> return $sat$ 
+ \end{tabbing}
+ \vfill\pause
+ This is correct, because
+ \begin{itemize}
+   \item at line 3, $s$, $t$ are in the same partition iff $\varphi^+ \Rightarrow s=t$
+   \item at line 7, $s$, $t$ are in the same partition, but $s\not=t$
+ \end{itemize}
+
+\end{frame}

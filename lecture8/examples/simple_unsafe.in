@@ -1,0 +1,56 @@
+:smt (define-type locations (subrange 1 4))
+
+:local l locations
+
+:initial
+:var x
+:cnj (= l[x] 1)
+
+:unsafe
+:var z1
+:var z2
+:cnj (= l[z1] 3) (= l[z2] 3)
+
+:comment TRANSITION 1: from 1 to 2
+:transition
+:var x
+:var j
+:guard (= l[x] 1)
+:numcases 2
+:case (= x j)
+ :val 2
+:case (not (= x j))
+ :val l[j]
+
+:comment TRANSITION 2: from 2 to 3
+:transition
+:var x
+:var j
+:guard (= l[x] 2)
+:numcases 2
+:case (= x j)
+ :val 3
+:case (not (= x j))
+ :val l[j]
+
+:comment TRANSITION 3: from 3 to 4
+:transition
+:var x
+:var j
+:guard (= l[x] 3)
+:numcases 2
+:case (= x j)
+ :val 4
+:case (not (= x j))
+ :val l[j]
+
+:comment TRANSITION 4: from 4 to 1
+:transition
+:var x
+:var j
+:guard (= l[x] 4)
+:numcases 2
+:case (= x j)
+ :val 1
+:case (not (= x j))
+ :val l[j]

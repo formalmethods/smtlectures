@@ -1,0 +1,64 @@
+\documentclass[xcolor=dvipsnames
+              ,handout
+              ]{beamer} 
+
+\input{theme}
+\input{macros}
+\input{packages}
+
+\title[Overview]{Satisfiability Modulo Theories\\ Lezione 1 - Overview \\ {\tiny (slides revision: \today, \currenttime)}}
+\author[R. Bruttomesso]{\large Roberto Bruttomesso}
+\date{20 Ottobre 2011}
+\institute[SMT]{\large Seminario di Logica Matematica \\(Corso Prof. Silvio Ghilardi)}
+\logo{ \vspace{-6pt} \includegraphics[scale=0.15]{imgs/logo-ita.png} }
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}[fragile]
+  \frametitle{FAQ}
+
+Le slides seguono la dispensa (in fase di scrittura !)
+\begin{center}
+``Satisfiability Modulo Theories''
+\end{center}
+e sono entrambi disponibili da 
+\url{http://www.oprover.org/roberto/teaching/smt}, dove
+trovate anche i puntatori ai tool e agli esempi usati qui
+
+\vfill
+Per chi cercasse un libro su questi argomenti, forse quello che
+si avvicina di piu' e'
+\begin{verbatim}
+Decision Procedures - An Algorithmic Point of View
+\end{verbatim}
+(\url{www.decision-procedures.org})
+
+\vfill
+Per ricevimento la mia stanza e' la S206, II piano, via Comelico,
+previa richiesta via email \url{roberto.bruttomesso@gmail.com}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{A gentle introduction to SMT}
+
+\input{intro}
+\input{eager_lazy}
+
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{SMT-LIB and \smtsolvers}
+
+\input{smtlib}
+\input{tools}
+
+\end{document}

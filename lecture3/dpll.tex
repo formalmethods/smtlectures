@@ -1,0 +1,93 @@
+\subsection{The DPLL Procedure}
+
+\begin{frame}
+  \frametitle{The DPLL Procedure (Revised)}
+
+  \scriptsize
+
+  \begin{tabbing}
+  as \= a \= a \= as \= asasdfsdfasdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+  DPLL( $V$, $\claset$ ) \\ \\
+  \> if ( ``a clause has all $\bot$ literals'' ) return $unsat$; \> \> \> \>  // Failure \\
+  \> if ( ``all clauses has a $\top$ literal'' ) return $sat$; \> \> \> \>  // Model found \\ \\
+  \pause
+  \> if ( ``a clause has all but one literal $l$ to $\bot$'' )  \\
+  \> \> return DPLL( $V \cup \{ l \}$, $\claset$ );   \> \> \>               // BCP \\ \\
+  \pause
+  \> $l =$ ``pick an unassigned literal'' \> \> \> \>                          // Decision \\ \\
+  \pause
+  \> if ( DPLL( $V \cup \{ l \}$, $\claset$ ) == $sat$ )        \> \> \> \>  // Left Branch\\
+  \> \> return $sat$; \\
+  \> else \\
+  \> \> return DPLL( $V \cup \{ \neg l \}$, $\claset$ );           \> \> \>  // Backtracking (Rigth Branch)
+  \end{tabbing}
+
+  \vfill
+  \pause
+
+  To be called as DPLL( $\{\ \}$, $\claset$ )
+
+\end{frame}
+
+\subsection{The Iterative DPLL Procedure}
+
+\begin{frame}
+  \frametitle{The Iterative DPLL Procedure (Revised)}
+
+  \scriptsize
+
+  \vfill
+
+  \begin{tabbing}
+  as \= a \= a \= a \= as \= asdfsdfasdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+  \> $dl = 0$; $flipped = \{\ \}$; $trail = \{\ \}$;    \> \> \> \> \> // Decision level, flipped vars, assignment\\ \\
+  \> while ( $true$ ) \\ \\
+  \> \> if ( BCP( ) == conflict )                          \> \> \> \> // Do BCP until possible \\
+  \> \> \> $done = false$; \\
+  \> \> \> do \\
+  \> \> \> \> if ( $dl == 0$ ) return $unsat$;                   \> \> // Unresolvable conflict \\
+  \> \> \> \> $l = $ {\sc GetDecisionLiteralAt}( $dl$ ); \\
+  \> \> \> \> {\sc BacktrackTo}( $dl - 1$ );                         \> \> // Backtracking (shrinks $trail$) \\
+  \> \> \> \> if ( var($l$) $\in flipped$ ) \\
+  \> \> \> \> \> $dl = dl - 1$; \\
+  \> \> \> \> else \\
+  \> \> \> \> \> $trail = trail \cup \{ \neg l \}$; \\ 
+  \> \> \> \> \> $flipped = flipped \cup \{ $var($l$)$ \}$; \\ 
+  \> \> \> \> \> $done = true$; \\
+  \> \> \> while ( !$done$ ); \\ \\
+  \> \> else \\
+  \> \> \> if ( ``all variables assigned'' ) return $sat$;    \> \> \> // $trail$ holds satisfying assignment \\
+  \> \> \> $l = $ {\sc Decision}( );                                \> \> \> // Do another decision \\
+  \> \> \> $trail = trail \cup \{ l \}$ \\
+  \> \> \> $dl = dl + 1$;                                     \> \> \> // Increase decision level \\
+  \end{tabbing}
+
+  \vfill
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The DPLL Procedure (Revised)}
+
+  Some characteristics
+
+  \begin{itemize}
+    \vfill
+    \item BCP is called with highest priority, as much as possible
+    \vfill
+    \item Backtracking is performed {\bf chronologically}: search backtracks to
+          the previous decision-level
+    \vfill
+  \end{itemize}
+
+  \pause
+  Some differences w.r.t. ``original'' DPLL Procedure
+
+  \begin{itemize}
+    \vfill 
+    \item $\claset$ is not touched: non-destructive data-structures (memory efficient)
+    \vfill 
+    \item Pure Literal Rule is not used: expensive to implement (!)
+  \end{itemize}
+
+\end{frame}

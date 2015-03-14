@@ -1,0 +1,27 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{vertex}   = [circle,draw=oproverblue!60,fill=oproverblue!20,thick]
+\tikzstyle{edge}     = [->,>=stealth,semithick]
+\tikzstyle{weight}   = [color=oproveryellow]
+\tikzstyle{hlvertex} = [circle,draw=red!60,fill=red!20,thick]
+\tikzstyle{hledge}   = [->,>=stealth,semithick,draw=red]
+\tikzstyle{hlweight} = [color=red]
+
+\node[hlvertex] (x) at (  1, 0)    {$x$};
+\node[hlvertex] (y) at (3.5, 0)    {$y$};
+\node[hlvertex] (z) at (  5,-1.25) {$z$};
+\node[hlvertex] (w) at (3.5,-2.5)  {$w$};
+\node[vertex] (t) at (  1,-2.5)  {$t$};
+
+\draw[hledge] (x) -- node[hlweight] {$8$}   (y);
+\draw[hledge] (y) -- node[hlweight] {$-1$}  (z);
+\draw[edge]   (z) -- node[weight] {$-6$}  (x);
+\draw[hledge] (z) -- node[hlweight] {$2$}   (w);
+\draw[hledge] (w) -- node[hlweight] {$-10$} (x);
+\draw[edge]   (w) -- node[weight] {$0$}   (t);
+\draw[edge]   (t) -- node[weight] {$3$}   (x);
+
+\end{tikzpicture}

@@ -1,0 +1,26 @@
+\subsection{Integers}
+
+\begin{frame}
+  \frametitle{Solving \Lia with \Lra}
+
+  The Simplex can be used also to reason (in a complete way) about the integers (\Lia),
+  e.g., using known techniques in linear programming
+  \vfill
+  Given a set of \Lia constraints $S$
+  \begin{itemize}
+    \item If $S$ is unsatisfiable 
+          on \Lra\footnote{This means that we allow variables to assume values in \Rat instead of \Int.}
+	  then it is also unsatisfiable on \Lia
+    \item If $S$ is satisfiable on \Lra, then we have to check if there is an integer solution
+  \end{itemize}
+  \vfill\pause
+  For the latter case the convex polytope on \Rat is explored sistematically. 
+  However, in general, search is necessary: \Lia is NP-Complete, like SAT
+  \begin{itemize}
+    \item in SAT we split $a$ and $\neg a$, in \Lia we split $x \leq c$ and $x \geq c+1$
+    \item in SAT we learn clauses, in \Lia we learn new tableau rows (new constraints)
+  \end{itemize}
+  \vfill\pause
+  When on the integers, $\delta$ is set to $1$ ($\Rat_\delta$ numbers are not used)
+
+\end{frame}

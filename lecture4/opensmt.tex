@@ -1,0 +1,83 @@
+\subsection{\opensmt}
+
+\begin{frame}
+  \frametitle{\opensmt}
+
+  \opensmt is an open-source \smtsolver that implements the lazy approach
+  \vfill
+  It uses \minisat 2.0 as \satsolver, and it has its own implementations for
+  \tsolvers 
+  \vfill
+  \pause
+  \begin{center}
+  \scalebox{.35}{\input{architecture_fig.pdf_t}}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{\tsolver interface (src/tsolvers/TSolver.h)}
+
+  \scriptsize
+
+  \opensmt features a minimalistic API for \tsolvers
+  \vfill
+  \begin{verbatim}
+    class TSolver
+    {
+      [...]
+
+      lbool      inform                  ( Enode * );
+      bool       assertLit               ( Enode *, bool = false );
+      bool       check                   ( bool );
+      void       pushBacktrackPoint      ( );
+      void       popBacktrackPoint       ( );
+
+      [...]
+    };
+  \end{verbatim}
+  \vfill
+  \verb|Enode|: a data-structure that represents \formulae and \tatoms 
+  \vfill
+  \verb|inform|: tells the \tsolver that a \tatom exists
+  \vfill
+  \verb|assertLit|: tells the \tsolver that a \tatom is assigned
+  \vfill
+  \verb|check|: consistency check
+  \vfill
+  \verb|push/pop|: set/restore backtrack points
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exercizes}
+
+  Assuming \T = \Lia
+  \vfill
+  \begin{enumerate}
+
+    \item For the example on slide 11, write the resolution
+          steps of the two calls to conflict analysis
+
+    \vfill
+
+    \item Find two different minimal \tconflicts for
+	  $$\babst{\mu} = \{  x + y \leq 0,\ 
+	                     2x + y \leq -1,\ 
+			    - x + y \leq 5,\
+			      x + 2y \leq 2,\ 
+			    -3x - 3y \leq -3\
+			  \}$$
+	  (notice that minimal \tconflicts may have different size)
+
+    \vfill
+    
+    \item Suppose that 
+          $\babst{\mu} = \{ x = 0, \neg (x + y > 0) \}$
+	  and that other \tatoms $y \leq 0$, $x = 1$, $x + y \leq -10$
+	  are currently unassigned. What is $\babst{\mu}$ after
+	  an exhaustive application of theory-propagation ?
+
+  \end{enumerate}
+
+\end{frame}

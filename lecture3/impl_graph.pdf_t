@@ -1,0 +1,29 @@
+\begin{picture}(0,0)%
+\includegraphics{impl_graph.pdf}%
+\end{picture}%
+\setlength{\unitlength}{3947sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(4516,4664)(2393,-5027)
+\put(5401,-4786){\makebox(0,0)[b]{\smash{{\SetFigFont{17}{20.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$a_7$}%
+}}}}
+\put(3301,-4336){\makebox(0,0)[b]{\smash{{\SetFigFont{17}{20.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\neg a_3$}%
+}}}}
+\put(4801,-2236){\makebox(0,0)[b]{\smash{{\SetFigFont{17}{20.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$a_4$}%
+}}}}
+\put(4801,-3436){\makebox(0,0)[b]{\smash{{\SetFigFont{17}{20.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$a_5$}%
+}}}}
+\put(2701,-2836){\makebox(0,0)[b]{\smash{{\SetFigFont{17}{20.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$a_1$}%
+}}}}
+\put(3301,-1336){\makebox(0,0)[b]{\smash{{\SetFigFont{17}{20.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$a_{10}$}%
+}}}}
+\put(4801,-736){\makebox(0,0)[b]{\smash{{\SetFigFont{17}{20.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\neg a_2$}%
+}}}}
+\put(6601,-2836){\makebox(0,0)[b]{\smash{{\SetFigFont{17}{20.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{1,1,1}$a_6$}%
+}}}}
+\end{picture}%

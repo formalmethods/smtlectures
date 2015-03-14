@@ -1,0 +1,23 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{vertex} = [circle,draw=oproverblue!60,fill=oproverblue!20,thick]
+\tikzstyle{edge}   = [->,>=stealth,thick]
+\tikzstyle{edge2}  = [->,>=stealth,semithick,draw=grey,color=grey,dashed]
+\tikzstyle{weight} = [color=oproveryellow]
+
+\node[vertex] (x) at (0,0)   {$x$};
+\node[vertex] (y) at (2,0)   {$y$};
+\node[vertex] (z) at (4,0)   {$z$};
+\node[circle] (h) at (-2,0)   {\ldots};
+\node[circle] (k) at (6,0)    {\ldots};
+
+\draw[edge]  (x) -- node[weight] {$4$} (y);
+\draw[edge]  (y) -- node[weight] {$2$} (z);
+\draw[edge]  (h) -- (x);
+\draw[edge]  (z) -- (k);
+\draw[edge2] (x) to [out=-45,in=225] node[weight] {$10$} (z);
+
+\end{tikzpicture}

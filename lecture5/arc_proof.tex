@@ -1,0 +1,28 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{vertex} = [circle,draw=oproverblue!60,fill=oproverblue!20,thick]
+\tikzstyle{edge}   = [->,>=stealth,thick]
+\tikzstyle{edge1}  = [->,>=stealth,thick,draw=red,color=red]
+\tikzstyle{weight} = [color=oproveryellow]
+
+\node[vertex] (x) at (0,0)   {$\idlnode{x}{\pi(x)}$};
+\node[vertex] (y) at (2,0)   {$\idlnode{y}{\pi(y)}$};
+\node[vertex] (I) at (-4,0)  {$\idlnode{I}{0}$};
+\node[circle] (h) at (-2,0)  {\ldots};
+\node (k) at (4,0)   {\ldots};
+
+\draw[edge] (x) -- node[weight] {$c$} (y);
+\draw[edge1] (I) -- (h);
+\draw[edge1] (h) -- (x);
+\draw[edge1] (h) to [out=-45,in=225] (y);
+\draw[edge] (y) -- (k);
+
+\node[circle] (l) at (-5,-1)  {};
+\node[circle] (m) at (-3,-1)  {shortest paths};
+
+\draw[edge1] (l) -- (m);
+
+\end{tikzpicture}

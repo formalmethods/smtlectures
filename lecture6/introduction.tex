@@ -1,0 +1,93 @@
+\subsection{Introduction}
+
+\begin{frame}
+  \frametitle{Simplex Algorithm}
+
+  Invented by Tobias Dantzig around 1950 \\
+  \vfill
+  Used to solve optimization problems in linear programming \\
+  \vfill
+  Greg Nelson was the first to employ it for 
+  constraint solving, AFAIK, around 1980
+  \vfill
+  Difference is that in linear programming input problem is
+  feasible and one looks for optimum. In constraint solving
+  problem can be infeasible, and we are interested in 
+  finding any solution
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Introduction}
+
+Linear Rational Arithmetic \Lra consists in solving
+Boolean combinations of atoms of the form
+$$
+\sum_{j=1}^n a_j x_j \leq b\quad\quad\quad\quad\sum_{j=1}^n a_j x_j \geq b
+$$
+where $a_j$ are constants (coefficients), $x_j$ are
+variables, and $b$ is a constant (bound). The domain
+of $a_j$, $x_j$, $b$ is that of rationals.
+\vfill
+\pause
+Notice that the following translations hold
+\begin{itemize}
+  \item $\sum_{j=1}^n a_j x_j = b     \quad\quad\Longrightarrow\quad\quad  (\sum_{j=1}^n a_j x_j \leq  b) \wedge (\sum_{j=1}^n a_j x_j \geq b)$  
+  \item $\sum_{j=1}^n a_j x_j < b     \quad\quad\Longrightarrow\quad\quad$ see later
+  \item $\sum_{j=1}^n a_j x_j > b     \quad\quad\Longrightarrow\quad\quad$ see later 
+  \item $\sum_{j=1}^n a_j x_j \not= b \quad\quad\Longrightarrow\quad\quad  (\sum_{j=1}^n a_j x_j < b) \vee (\sum_{j=1}^n a_j x_j > b)$  
+\end{itemize}
+
+\end{frame}
+
+\subsection{Preprocessing}
+
+\begin{frame}
+  \frametitle{Preprocessing}
+
+  In the SMT setting, we are given a formula $\varphi$ like
+  $$
+  (x \geq 0) \wedge ((x + y \leq 2) \vee (x + 2y - z \geq 6)) \wedge ((x + y \geq 2) \vee (2y - z \leq 4))
+  $$
+  We perform a {\bf preprocessing step}, in order to separate the formula into a set of {\bf equations}
+  and a set of simple {\bf bounds}. This is done by introducing {\bf fresh} variables. 
+  \pause
+  \vfill
+  The formula above $\varphi$ is equivalent to (the conjunction of)
+  $$
+  \begin{array}{lc}
+    (x \geq 0) \wedge ((s_1 \leq 2) \vee (s_2 \geq 6)) \wedge ((s_1 \geq 2) \vee (s_3 \leq 4)) & \onslide<3>{\varphi'} \\
+    \\
+    (s_1 = x + y) \\ 
+    (s_2 = x + 2y - z) & \onslide<3>{A\vec{x}=\vec{0}} \\
+    (s_3 = 2y - z)
+  \end{array}
+  $$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Preprocessing}
+  In general, from a formula $\varphi$, we end up in a rewritten formula of the kind
+  $$
+  \varphi' \ \wedge\ A\vec{x} = \vec{0} 
+  $$
+  where $\varphi'$ is a Boolean combination of {\bf bounds}, while $A\vec{x}=\vec{0}$ is a system of {\bf equations}
+  of the form
+  $$
+  \begin{array}{rcl}
+    a_{11} x_1 + \ldots + a_{1n} x_n & = & 0 \\ 
+    a_{21} x_1 + \ldots + a_{2n} x_n & = & 0 \\ 
+    \ldots \\                             
+    a_{i1} x_1 + \ldots + a_{in} x_n & = & 0 \\ 
+    \ldots \\                             
+    a_{m1} x_1 + \ldots + a_{mn} x_n & = & 0 \\ 
+  \end{array}
+  $$
+  \vfill
+  \pause
+  Now we detach $A\vec{x} = \vec{0}$ from the formula, and we store it into the \tsolver
+  permanently. The \satsolver will work only on $\varphi'$. Therefore {\bf the constraints
+  that are pushed into and popped from the \tsolver are just bounds} 
+
+\end{frame}

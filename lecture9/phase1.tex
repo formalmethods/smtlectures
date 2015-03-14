@@ -1,0 +1,141 @@
+\begin{frame}[fragile]
+  \frametitle{Phase 1 - Setting up files and directories}
+
+  \begin{enumerate}[1.]
+
+    \item Create a new directory for \So-solver
+
+    \begin{enumerate}[a.]
+
+      \item \verb|$ cd src/tsolvers|
+
+      \item \verb|src/tsolvers $ cp -r emptysolver sosolver|
+
+    \end{enumerate}
+
+    \vfill\pause
+
+    \item Rename files
+
+    \begin{enumerate}[a.]
+
+      \item \verb|src/tsolvers $ cd sosolver|
+
+      \item \verb|src/tsolvers/sosolver $ mv EmptySolver.h SOSolver.h|
+
+      \item \verb|src/tsolvers/sosolver $ mv EmptySolver.C SOSolver.C|
+
+    \end{enumerate}
+
+    \vfill\pause
+
+    \item Adjust Makefile.am
+
+    \begin{enumerate}[a.]
+
+      \item \verb|src/tsolvers/sosolver $ rm Makefile.in|
+
+      \item \verb|src/tsolvers/sosolver $ vim Makefile.am|
+
+      \item Find-replace ``\verb|empty|'' with ``\verb|so|'' and 
+            ``\verb|Empty|'' with ``\verb|SO|''
+	    in the file (\verb|:%s/empty/so/g| and \verb|:%s/Empty/SO/g| with vim)
+
+    \end{enumerate}
+
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 1 - Setting up files and directories}
+
+  \begin{enumerate}[4.]
+
+    \item Adjust source files
+
+    \begin{enumerate}[a.]
+
+      \item \verb|src/tsolvers/sosolver $ vim SOSolver.h|
+
+      \item Find-replace ``\verb|EMPTY|'' with ``\verb|SO|''
+            (\verb|:%s/EMPTY/SO/g| with vim)
+
+      \item Find-replace ``\verb|Empty|'' with ``\verb|SO|''
+            (\verb|:%s/Empty/SO/g| with vim)
+
+      \item \verb|src/tsolvers/sosolver $ vim SOSolver.C|
+
+      \item Find-replace ``\verb|Empty|'' with ``\verb|SO|''
+            (\verb|:%s/Empty/SO/g| with vim)
+
+    \end{enumerate}
+
+  \end{enumerate}
+
+  \vfill\pause
+
+  \begin{enumerate}[5.]
+
+    \item Adjust \verb|../Makefile.am|
+
+    \begin{enumerate}[a.]
+
+      \item \verb|src/tsolvers/sosolver $ cd ..|
+
+      \item \verb|src/tsolvers $ vim Makefile.am|
+
+      \item Add \verb|sosolver| in \verb|SUBDIR| list
+
+      \item Add \verb|sosolver/libsosolver.la|
+
+    \end{enumerate}
+
+  \end{enumerate}
+
+  \vfill\pause
+
+  \begin{enumerate}[6.]
+
+    \item Adjust \verb|../../configure.ac|
+
+    \begin{enumerate}[a.]
+
+      \item \verb|src/tsolvers $ cd ../..|
+
+      \item \verb|$ vim configure.ac|
+
+      \item Add \verb|-I\${top_srcdir}/src/tsolvers/sosolver \\\| 
+
+      \item Add \verb|src/tsolvers/sosolver/Makefile \|
+
+    \end{enumerate}
+
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 1 - Setting up files and directories}
+
+  \vfill
+
+  \begin{enumerate}[7.]
+
+    \item Compile again
+
+    \begin{enumerate}[a.]
+
+      \item \verb|$ cd debug|
+
+      \item \verb|debug $ make -j4|
+
+      \item \verb|debug $ cd ..|
+
+    \end{enumerate}
+
+  \end{enumerate}
+
+  \vfill
+  
+\end{frame}

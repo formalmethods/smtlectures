@@ -1,0 +1,445 @@
+\subsection{Solving}
+
+\begin{frame}
+  \frametitle{The Tableau}
+
+  \scriptsize
+
+  The equations $A\vec{x} = \vec{0}$ are kept in a {\bf tableau}, the most 
+  important structure of the Simplex
+  \vfill
+  The variables are {\bf partitioned} into the set of {\bf non-basic} \nonbas
+  and {\bf basic} \bas  variables 
+  \vfill
+  E.g., \bas = $\{ x_1, x_3, x_4 \}$, \nonbas = $\{ x_2, x_5, x_6 \}$
+  $$
+  \begin{array}{rcl}
+    x_1 & = & 4 x_2 + x_5 \\
+    x_3 & = & 5 x_2 + 3 x_6 \\
+    x_4 & = & x_5 - x_6
+  \end{array}
+  $$
+  \vfill
+  non-basic variables can be considered as {\bf independent}, while basic variables
+  assume values forced by the non-basic ones. E.g., in the row
+  $$
+    x_1 = 4 x_2 + x_5 
+  $$
+  suppose that $x_2 = 2, x_5 = 1$, then we set $x_1 = 9$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Solving}
+
+  \scriptsize
+
+  The \tsolver stores 
+  \begin{itemize}
+    \item the Tableau (does not grow/shrink)
+    \item the active bounds on variables (initially none)
+    \item the current model $\mu$ (initially all $0$, but could be chosen differently)
+  \end{itemize}
+
+  \vfill
+
+  \begin{columns}
+
+  \begin{column}{.4\textwidth}
+  \begin{center}
+  Tableau
+  \end{center}
+  $$
+  \begin{array}{rcl}
+    x_1 & = & a_{11} x_{m+1} \ldots + a_{1n} x_n  \\ 
+    x_2 & = & a_{21} x_{m+1} \ldots + a_{2n} x_n  \\ 
+    & \ldots \\                             
+    x_i & = & a_{i1} x_{m+1} \ldots + a_{in} x_n  \\ 
+    & \ldots \\                             
+    x_m & = & a_{m1} x_{m+1} \ldots + a_{mn} x_n \\
+    \\
+    \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $lb$~~~~~~~Bounds~~~~~~~$ub$
+  \end{center}
+  $$
+  \begin{array}{rcccl}
+    - \infty & \leq & x_1 & \leq & \infty \\
+    - \infty & \leq & x_2 & \leq & \infty \\
+    & & \ldots & & \\
+    - \infty & \leq & x_i & \leq & \infty \\
+    & & \ldots & & \\
+    - \infty & \leq & x_m & \leq & \infty \\
+    & & \ldots & & \\
+    - \infty & \leq & x_n & \leq & \infty \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $\mu$
+  \end{center}
+  $$
+  \begin{array}{rcl}
+  x_1 & \mapsto & 0 \\
+  x_2 & \mapsto & 0 \\
+  & \ldots \\
+  x_i & \mapsto & 0 \\
+  & \ldots \\
+  x_m & \mapsto & 0 \\
+  & \ldots \\
+  x_n & \mapsto & 0 
+  \end{array}
+  $$
+  \end{column}
+
+  \end{columns}
+
+  \vfill
+
+  The \tsolver is in a consistent state if the model $(i)$ respects the tableau 
+  and $(ii)$ satisfies the bounds (for all $x$, $lb(x) \leq \mu(x) \leq ub(x)$)
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Asserting a bound on a non-basic variable}
+
+  \scriptsize
+
+  Asserting a bound $x \leq c$ (resp. $x \geq c$), $x \in \nonbas$ may result in \pause
+  \begin{itemize}
+    \item unsatisfiability, if $c < lb(x)$ (resp. $c > ub(x)$) \pause
+    \item nothing, if $c > ub(x)$ (resp. $c < lb(x)$) \pause
+    \item bound tightening, model not affected if $\mu(x) \leq c$ (resp. $\mu(x) \geq c$) \pause
+    \item bound tightening, model affected if $\mu(x) > c$ (resp. $\mu(x) < c$) \pause
+  \end{itemize}
+  \vfill
+  The last case is ``problematic'' because we need to 
+  \begin{enumerate}[$(i)$]
+    \item adjust $\mu(x)$: $\mu(x)$ is set to $c$ 
+    \item adjust the values of basic variables
+  \end{enumerate}
+  We assume we have a function $Update(x,c)$ that implements $(i)-(ii)$
+  \vfill \pause
+  \begin{columns}
+
+  \begin{column}{.4\textwidth}
+  \begin{center}
+  Tableau
+  \end{center}
+  $$
+  \begin{array}{rcl}
+    x_1 & = & - x_3 + x_4  \\ 
+    x_2 & = &   x_3 + x_4  \\ 
+    \\
+    \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $lb$~~~~~~~Bounds~~~~~~~$ub$
+  \end{center}
+  $$
+  \begin{array}{rcccl}
+    - \infty & \leq & x_1 & \leq & \infty \\
+    - \infty & \leq & x_2 & \leq & \infty \\
+    \only<1-9|handout:0>{-\infty}\only<10->{-8} & \leq & x_3 & \leq & \only<1-7|handout:0>{\infty}\only<8->{-4} \\
+    - \infty & \leq & x_4 & \leq & \infty 
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $\mu$
+  \end{center}
+  $$
+  \begin{array}{rcl}
+  x_1 & \mapsto & \only<1-8|handout:0>{0}\only<9->{4} \\
+  x_2 & \mapsto & \only<1-8|handout:0>{0}\only<9->{-4} \\
+  x_3 & \mapsto & \only<1-8|handout:0>{\coloneat{0}{8}}\only<9->{-4} \\
+  x_4 & \mapsto & 0 
+  \end{array}
+  $$
+  \end{column}
+
+  \end{columns}
+  \vfill
+  \tsolver stack: \\
+  \onslide<8->{$x_3 \leq -4$\ \ \ \ (tighten $ub(x_3)$, affects other values)\\}
+  \onslide<10->{$x_3 \geq -8$\ \ \ \ (tighten $lb(x_3)$, does not affect other values)\\}
+  \onslide<11->{$x_3 \leq 0$\ \ \ \ \ \  (does not tighten $ub(x_3)$)\\}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Asserting a bound on a basic variable}
+
+  \scriptsize
+
+  Asserting a bound $x \leq c$ (resp. $x \geq c$), $x \in \bas$ may result in
+  the same $4$ cases as before
+  \begin{itemize}
+    \item unsatisfiability, if $c < lb(x)$ (resp. $c > ub(x)$) 
+    \item nothing, if $c > ub(x)$ (resp. $c < lb(x)$) 
+    \item bound tightening, model not affected if $\mu(x) \leq c$ (resp. $\mu(x) \geq c$)
+    \item bound tightening, model affected if $\mu(x) > c$ (resp. $\mu(x) < c$) 
+  \end{itemize}
+  \vfill
+  however, since a basic variable is {\bf dependent} from non-basic variables in the
+  tableau, we cannot use function $Update$ directly. Before we need to 
+  turn $x$ into a non-basic variables.
+  \pause 
+  \vfill
+  So if $\mu(x) > c$ or $\mu(x) < c$ we have to
+  \begin{enumerate}[$(i)$]
+    \item {\bf turn $x$ into non-basic} (another non-basic variable will become basic instead)
+    \item adjust $\mu(x)$: $\mu(x)$ is set to $c$ 
+    \item adjust the values of basic variables
+  \end{enumerate}
+  \vfill
+  Step $(i)$ is performed by a function $Pivot(x,y)$ (see next slide). Therefore asserting
+  a bound on a basic variable $x$ consists in executing $Pivot(x,y)$ and then $Update(x,c)$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Pivoting}
+
+  \scriptsize
+
+  $Pivot(x,y)$ is the operation of swapping a basic variable $x$ with a non-basic variable $y$ 
+  (how to choose $y$ ? See next slide)
+  \vfill
+  It consists of the following steps:
+  \begin{enumerate}
+    \item Take the row $x = a y + R$ in the tableau ($R = \mbox{rest of the polynome}$)
+    \item Rewrite it as $y = \frac{x - R}{a}$
+    \item Substitute $y$ with $\frac{x - R}{a}$ in all the other rows of the tableau (and simplify)
+  \end{enumerate}
+  \vfill\pause
+  Example for $Pivot(x_1,x_3)$
+  \vfill
+  \ra{1.5}
+  \begin{columns}
+
+    \begin{column}{.33\textwidth}
+      \begin{center}
+      Step 1 
+      \end{center}
+      $$
+      \begin{array}{rcl}
+	\colone{x_1} & \colone{=} & \colone{3 x_2 + 4 x_3 - 5 x_4} \\
+	x_5 & = & - x_2 - x_3 \\
+	x_6 & = & 10 x_2 + 5 x_4	
+      \end{array}
+      $$
+    \end{column}
+
+    \begin{column}{.33\textwidth}
+      \begin{center}
+      Step 2 
+      \end{center}
+      $$
+      \begin{array}{rcl}
+	\colone{x_3} & \colone{=} & \colone{-\frac{3}{4} x_2 + \frac{1}{4} x_1 + \frac{5}{4} x_4} \\
+	x_5 & = & - x_2 - x_3 \\
+	x_6 & = & 10 x_2 + 5 x_4	
+      \end{array}
+      $$
+    \end{column}
+
+    \begin{column}{.33\textwidth}
+      \begin{center}
+      Step 3 
+      \end{center}
+      $$
+      \begin{array}{rcl}
+	x_3 & = & -\frac{3}{4} x_2 + \frac{1}{4} x_1 + \frac{5}{4} x_4 \\
+	\colone{x_5} & \colone{=} & \colone{- \frac{1}{4} x_2 -\frac{1}{4} x_1 - \frac{5}{4} x_4} \\
+	x_6 & = & 10 x_2 + 5 x_4	
+      \end{array}
+      $$
+    \end{column}
+
+  \end{columns}
+  \vfill\pause
+  we moved from $\bas = \{ x_1, x_5, x_6 \}$ to $\bas = \{ x_3, x_5, x_6 \}$ 
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Choosing Pivoting Variable}
+
+  \scriptsize
+
+  Consider the following situation 
+  \vfill
+  \begin{columns}
+
+  \begin{column}{.4\textwidth}
+  \begin{center}
+  Tableau
+  \end{center}
+  $$
+  \begin{array}{rcl}
+    & \ldots \\                             
+    x_1 & = & 3 x_2 - 4 x_3 + 2 x_4 - x_5 \\ 
+    & \ldots \\                             
+    \\
+    \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $lb$~~~~~~~Bounds~~~~~~~$ub$
+  \end{center}
+  $$
+  \begin{array}{rcccl}
+     -4 & \leq & x_1 & \leq & 10 \\
+      1 & \leq & x_2 & \leq & 3 \\
+     -4 & \leq & x_3 & \leq & -1 \\
+      1 & \leq & x_4 & \leq & 2 \\
+     -1 & \leq & x_5 & \leq & 10 \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $\mu$
+  \end{center}
+  $$
+  \begin{array}{rcl}
+  x_1 & \mapsto & \colone{12} \\
+  x_2 & \mapsto & 1 \\
+  x_3 & \mapsto & -1 \\
+  x_4 & \mapsto & 2 \\
+  x_5 & \mapsto & -1 
+  \end{array}
+  $$
+  \end{column}
+
+  \end{columns}
+  \vfill
+  which among $\nonbas = \{ x_2, x_3, x_4 \}$ do I choose for pivoting ? Clearly, the value of $\mu(x_1)$
+  is too high, I have to decrease it by playing with the values of \nonbas: \pause
+  \begin{itemize}
+    \item $  3 x_2$ cannot decrease, as $\mu(x_2) = lb(x_2)$ and cannot be moved down \pause
+    \item $- 4 x_3$ cannot decrease, as $\mu(x_3) = ub(x_3)$ and cannot be moved up \pause
+    \item $  2 x_4$ can decrease, as  $\mu(x_4) = ub(x_4)$, and can be moved down \pause
+    \item $-   x_5$ can decrease, as  $\mu(x_5) = lb(x_5)$, and can be moved up
+  \end{itemize}
+  \vfill\pause
+  both $x_4$ and $x_5$ are therefore good candidates for pivoting. To avoid loops, 
+  choose variable with smallest subscript (Bland's Rule). This rule is not necessarily
+  efficient, though
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Detect Unsatisfiability}
+
+  \scriptsize
+
+  There might be cases in which {\bf no suitable variable for pivoting can be found}.
+  This indicates unsatisfiability. \pause
+  Consider the following where we have just asserted $x_1 \leq 9$
+  \vfill
+  \begin{columns}
+
+  \begin{column}{.4\textwidth}
+  \begin{center}
+  Tableau
+  \end{center}
+  $$
+  \begin{array}{rcl}
+    & \ldots \\                             
+    x_1 & = & 3 x_2 - 4 x_3 + 2 x_4 - x_5 \\ 
+    & \ldots \\                             
+    \\
+    \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $lb$~~~~~~~Bounds~~~~~~~$ub$
+  \end{center}
+  $$
+  \begin{array}{rcccl}
+     -4 & \leq & x_1 & \leq & 9 \\
+      1 & \leq & x_2 & \leq & 3 \\
+     -4 & \leq & x_3 & \leq & -1 \\
+      2 & \leq & x_4 & \leq & 2 \\
+     -1 & \leq & x_5 & \leq & -1 \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $\mu$
+  \end{center}
+  $$
+  \begin{array}{rcl}
+  x_1 & \mapsto & \colone{12} \\
+  x_2 & \mapsto & 1 \\
+  x_3 & \mapsto & -1 \\
+  x_4 & \mapsto & 2 \\
+  x_5 & \mapsto & -1 
+  \end{array}
+  $$
+  \end{column}
+
+  \end{columns}
+  \vfill
+  no variable among $\nonbas = \{ x_2, x_3, x_4 \}$ can be chosen for pivoting. This is because (due to tableau)
+  $$x_2 \geq 3\ \swedge\ x_3 \leq -1\ \swedge\ x_4 \geq 4\ \swedge\ x_5 \leq -1\ \ \Rightarrow\ \ x_1 \geq 12\ \ \Rightarrow\ \ \neg (x_1 \leq 9)$$
+  \vfill
+  Therefore
+  $$\{ x_2 \geq 3,\ x_3 \leq -1,\ x_4 \geq 4,\ x_5 \leq -1,\ \neg( x_1 \leq 9 ) \}$$
+  is a \tconflict (modulo the tableau)
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Solving}
+
+  \scriptsize
+
+  \begin{tabbing}
+  asv \= a \= a \= a \= as \= asdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+  1  \> while( $true$ ) \\
+     \> \\
+  2  \> \> pick first $x_i \in \bas$ such that $\mu(x_i) < lb(x_i)$ or $\mu(x_i) > ub(x_i)$ \\
+  3  \> \> if ( there is no such $x_i$ ) return $sat$ \\
+     \> \\
+  4  \> \> $x_j = ChoosePivot( x_i )$ \\
+  5  \> \> if ( $x_j$ == $undef$ ) return $unsat$ \\ 
+  6  \> \> $Pivot(x_i,x_j)$ \\
+     \> \\
+  7  \> \> if ( $\mu(x_i) < lb(x_i)$ ) \\
+  8  \> \> \> $Update( x_i, lb(x_i) )$ \\
+     \> \\
+  9  \> \> if ( $\mu(x_i) > ub(x_i)$ ) \\
+  10 \> \> \> $Update( x_i, ub(x_i) )$ \\
+     \> \\
+  11 \> end
+  \end{tabbing}
+
+  $x_j = ChoosePivot( x_i )$: returns variable to use for pivoting with $x_i$, or $undef$ if conflict\\
+  pick first $x_i$ \ldots: it's again Bland's rule
+
+\end{frame}

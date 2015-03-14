@@ -1,0 +1,91 @@
+\section{Lecture 7 - A \tsolver for \Uf}
+
+\begin{frame}
+  \frametitle{A \tsolver for \Uf}
+
+  The solving phase inside the \Uf-solver happens in two steps
+  \vfill
+  Given a conjunction of \tlits $\varphi$ to check for satisfiability, the \Uf-solver
+  \vfill
+  first it constructs {\bf equivalence classes} using $\varphi^+$ (the set of positive \tlits),
+  using, for example, the Union-Find algorithm
+  \vfill
+  and then checks one by one the negative \tlits in $\varphi^-$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{A \tsolver for \Uf}
+
+  \scriptsize
+
+  First of all notice that \tconflicts are always of the form
+  $$
+    \{\ s \not= t, \mbox{``other equalities that cause } s \mbox{ and } t \mbox{ to join the same class''} \} 
+  $$
+  We reconstruct the conflict by storing the reason that caused two classes to collapse. When a
+  $s \not=t $ causes $unsat$, we call a routine Explain($s$,$t$) that collects all the reasons
+  that made $s$ equal to $t$ \\
+  Example 
+  $$
+  \{\ \coloneat{x\!=\!y}{2}
+   ,\ \coloneat{y\!=\!w}{3}
+   ,\ \coloneat{f(x)\!=\!z}{5}
+   ,\ \coloneat{f(w)\!=\!a}{6}
+   ,\ \coloneat{a\!\not=\!z}{7-}\ \}
+  $$
+  \begin{overlayarea}{\textwidth}{3cm}
+    \begin{center}
+    \only<1|handout:0>{\input{confl}}
+    \only<2|handout:0>{\input{confl_1}}
+    \only<3|handout:0>{\input{confl_2}}
+    \only<4|handout:0>{\input{confl_3}}
+    \only<5|handout:0>{\input{confl_4}}
+    \only<6->{\input{confl_5}}
+    \end{center}
+  \end{overlayarea}
+  \vfill
+  \onslide<7->{
+  On processing $a\not=z$, we call Explain( $a$, $z$ )
+  }
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Lecture 7 - Exercize 2}
+  
+  \scriptsize
+
+  We can store a reason of a Union inside the struct \verb|Node|
+
+  \begin{verbatim}
+  struct Node { 
+    ...
+    Node *  root;     // Points to class' representant
+    Enode * reason;   // T-atom that caused union
+  };
+  \end{verbatim} 
+
+  \begin{tabbing}
+  aa \= a \= a \= a \= xxxxxxxxxxxxxxaaaaaaaaaaaaaaaaaaaaa \= asdasdasdasdasdasdasdasdasd \kill
+
+     \> explanation $= \{\ \}$ \> \> \> \> // Global variable \\
+   \\
+   1 \> {\bf procedure} Explain( $s$, $t$ ) \\
+   \\
+   2 \> if ( $s == t$ ) return           \> \> \> \> // Nothing to explain \ldots \\
+   \\
+   3 \> while( $s.next \not= s$ )        \> \> \> \> // Collect reasons while moving to root \\
+   4 \> \> if ( $s.reason == $ NULL )       \> \> \> // No reason: union caused by congruence \\
+     \> \> \> // Let $s \equiv f( s_1, \ldots, s_n )$, $s.next \equiv f( t_1, \ldots, t_n )$ \\
+   5 \> \> \> foreach $i \in \{ 1, \ldots, n \}$ \\
+   6 \> \> \> \> Explain( $s_i$, $t_i$ ) \\
+   7 \> \> else                             \> \> \> // Reason exists, save it \\
+   8 \> \> \> explanation $=$ explanation $\cup\ \{ s.reason \}$ \\ 
+   9 \> \> $s = s.next$ \\
+   \\
+   // Same ``while'' loop for $t$ \ldots
+
+  \end{tabbing}
+
+\end{frame}

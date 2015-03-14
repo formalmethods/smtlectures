@@ -1,0 +1,98 @@
+\begin{frame}
+  \frametitle{An Example}
+
+  \scriptsize
+
+  Consider the following problem
+
+  \begin{overlayarea}{\textwidth}{1cm}
+    \only<1|handout:0>{$$ x_1 - x_2 \leq 8\ \swedge\ x_2 - x_3 \leq -1\ \swedge\ x_3 - x_4 \leq 2\ \swedge\ x_4 - x_1 \leq -10 $$} 
+    \only<2->{$$ x_5 \leq 8\ \swedge\ x_6 \leq -1\ \swedge\ x_7 \leq 2\ \swedge\ x_8 \leq -10 $$} 
+  \end{overlayarea}
+
+  \onslide<2->{
+  \begin{columns}
+
+  \begin{column}{.4\textwidth}
+  \begin{center}
+  Tableau
+  \end{center}
+  $$
+  \only<2-4|handout:0>{
+  \begin{array}{rcl}
+    x_5 & = & x_1 - x_2  \\ 
+    x_6 & = & x_2 - x_3  \\ 
+    x_7 & = & x_3 - x_4  \\ 
+    x_8 & = & x_4 - x_1  \\ 
+  \end{array}}
+  \only<5-7|handout:0>{
+  \begin{array}{rcl}
+    x_5 & = & x_1 - x_2  \\ 
+    x_3 & = & x_2 - x_6  \\ 
+    x_7 & = & x_2 - x_6 - x_4  \\ 
+    x_8 & = & x_4 - x_1  \\ 
+  \end{array}}
+  \only<8|handout:0>{
+  \begin{array}{rcl}
+    x_5 & = & x_4 - x_8 - x_2  \\ 
+    x_3 & = & x_2 - x_6  \\ 
+    x_7 & = & x_2 - x_6 - x_4  \\ 
+    x_1 & = & x_4 - x_8  \\ 
+  \end{array}}
+  \only<9,10>{
+  \begin{array}{rcl}
+    x_2 & = & x_4 - x_8 - x_5  \\ 
+    x_3 & = & x_4 - x_8 - x_5 - x_6  \\ 
+    \coloneat{x_7}{10} & \coloneat{=}{10} & \coloneat{- x_5 -x_8 - x_6}{10} \\ 
+    x_1 & = & x_4 - x_8  \\ 
+  \end{array}}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $lb$~~~~~~~Bounds~~~~~~~$ub$
+  \end{center}
+  $$
+  \begin{array}{rcccl}
+    - \infty & \leq & x_5 & \leq & \only<2|handout:0>{\infty}\only<3->{8} \\
+    - \infty & \leq & x_6 & \leq & \only<2,3|handout:0>{\infty}\only<4->{-1} \\
+    - \infty & \leq & x_7 & \leq & \only<2-5|handout:0>{\infty}\only<6->{2} \\
+    - \infty & \leq & x_8 & \leq & \only<2-6|handout:0>{\infty}\only<7->{-10} \\
+  \end{array}
+  $$
+  \end{column}
+
+  \begin{column}{.3\textwidth}
+  \begin{center}
+  $\mu$
+  \end{center}
+  $$
+  \begin{array}{rcl}
+  x_1 & \mapsto & \only<2-7|handout:0>{0}\only<8->{10} \\
+  x_2 & \mapsto & \only<2-8|handout:0>{0}\only<9->{2} \\
+  x_3 & \mapsto & \only<2-4|handout:0>{0}\only<5->{1} \\
+  x_4 & \mapsto & 0 \\ 
+  x_5 & \mapsto & \only<2-7|handout:0>{0}\only<8|handout:0>{10}\only<9->{8} \\
+  x_6 & \mapsto & \only<2-4|handout:0>{0}\only<5->{-1} \\
+  x_7 & \mapsto & \only<2-4|handout:0>{0}\only<5-8|handout:0>{1}\only<9->{3} \\
+  x_8 & \mapsto & \only<2-7|handout:0>{0}\only<8->{-10} 
+  \end{array}
+  $$
+  \end{column}
+
+  \end{columns}
+  }
+  \vfill
+  \begin{overlayarea}{\textwidth}{1cm}
+    \only<3|handout:0>{Receiving $x_5 \leq 8$: OK}
+    \only<4|handout:0>{Receiving $x_6 \leq -1$: $\mu(x_6)$ out of bounds}
+    \only<5|handout:0>{$Pivot(x_6,x_3)$, $Update(x_6,-1)$. Values of $x_3$ and $x_7$ change as well}
+    \only<6|handout:0>{Receiving $x_7 \leq 2$: OK}
+    \only<7|handout:0>{Receiving $x_8 \leq -10$: $\mu(x_8)$ out of bounds}
+    \only<8|handout:0>{$Pivot(x_8,x_1)$, $Update(x_8,-10)$. Values of $x_5$ and $x_1$ change as well. $\mu(x_5)$ out of bounds}
+    \only<9|handout:0>{$Pivot(x_5,x_2)$, $Update(x_5,8)$. Values of $x_2$ and $x_7$ change as well. $\mu(x_7)$ out of bounds}
+    \only<10>{Cannot find suitable variable for pivoting ($ChoosePivot(x_7)$ == $undef$). Return $unsat$}
+  \end{overlayarea}
+
+\end{frame}

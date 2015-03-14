@@ -1,0 +1,252 @@
+\begin{frame}
+  \frametitle{Introduction}
+
+  \bitvectors are extremely useful data structures,
+  used to symbolically represent hardware and software
+  constructs (see later)
+  \vfill
+  \pause
+  The world of \bitvectors is a {\bf finite} world, i.e.,
+  with \bitvectors it is not possible to represent/handle 
+  arbitrarily large numbers 
+  \vfill
+  \pause
+  Indeed, when speaking about \bitvectors we always
+  associate a {\bf width}  
+  (which is usually a power of 2, often 32 or 64)
+  \vfill
+  \pause
+  The width specifies the (maximum) {\bf number of bits} used to
+  represent variables and terms
+  \vfill
+  \pause
+  \bitvector \formulae are mathematically characterized by 
+  the theory of \bitvectors \Bitvectors
+  
+\end{frame}
+
+\subsection{Syntax}
+
+\begin{frame}
+  \frametitle{Bit-Vectors}
+  
+  A bit-vector is an array of bits 
+  \smallskip \\
+  \begin{center}
+  \scalebox{.3}{\input{bv_ab.pdf_t}}
+  \end{center} 
+  \vfill
+  \pause
+
+  Selection (or Extraction): $\w{a}{3}[1:0]$ 
+  \smallskip \\
+  \begin{center}
+  \scalebox{.3}{\input{bv_a_sel.pdf_t}} 
+  \end{center}
+
+  \vfill
+  \pause
+
+  Notice that
+  \begin{itemize}
+    \item $\w{a}{n}[i:j]$ returns a \bitvector of width $i - j + 1$ ($0 \leq j \leq i \leq n - 1$) \pause
+    \item $\w{a}{n}[n-1:0]$ \pause $= \w{a}{n}$ \pause
+    \item Selection has precedence over any other operator
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bit-Vectors}
+  
+  A bit-vector is an array of bits 
+  \smallskip \\
+  \begin{center}
+  \scalebox{.3}{\input{bv_ab.pdf_t}}
+  \end{center} 
+  \vfill
+
+  Concatenation $\w{a}{3} :: \w{b}{3}$ 
+  \smallskip \\
+  \begin{center}
+  \scalebox{.3}{\input{bv_ab_conc.pdf_t}} 
+  \end{center}
+
+  \vfill
+  \pause
+
+  Notice that
+  \begin{itemize}
+    \item $\w{a}{n} :: \w{b}{m}$ returns a \bitvector of width $n+m$ \pause
+    \item $\w{a}{n}[n-1:i] :: \w{a}{n}[i-1:0]$ \pause $= \w{a}{n}[n-1:0]$ \pause $= \w{a}{n}$
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bit-Vectors}
+  
+  A bit-vector is an array of bits 
+  \smallskip \\
+  \begin{center}
+  \scalebox{.3}{\input{bv_ab.pdf_t}}
+  \end{center} 
+  \vfill
+
+  Arithmetic $\w{a}{3} + \w{b}{3}$ 
+  \smallskip \\
+  \begin{center}
+  \scalebox{.3}{\input{bv_ab_plus.pdf_t}} 
+  \end{center}
+
+  \vfill
+  \pause
+
+  Notice that
+  \begin{itemize}
+    \item To be precise, we should have written $\w{a}{3} +_{[3]} \w{b}{3}$ (widths must be the same)
+    \item Semantic is that of {\bf modular} arithmetic
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bit-Vectors}
+  
+  A bit-vector is an array of bits 
+  \smallskip \\
+  \begin{center}
+  \scalebox{.3}{\input{bv_ab.pdf_t}}
+  \end{center} 
+  \vfill
+
+  Bitwise $\w{a}{3} \band \w{b}{3}$ 
+  \smallskip \\
+  \begin{center}
+  \scalebox{.3}{\input{bv_ab_bitw.pdf_t}} 
+  \end{center}
+
+  \vfill
+  \pause
+
+  Notice that
+  \begin{itemize}
+    \item Again, to be precise, we should have written $\w{a}{3} \band_{[3]} \w{b}{3}$ (widths must be the same)
+    \item Used to compute bit-mask operations
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{A (non-exhaustive) list of operators and predicates}
+
+  Each \bitvector term of width $n$, is associated with a sort \SBv{n} ($n \geq 1$)
+  \vfill
+  \pause
+
+  \begin{center}
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    Name                 & Symb      & Type                        & Signature \\
+    \hline               
+    Selection            & $\_[i:j]$ & \multirow{2}{*}{Core}       & \SBv{n}                  $\rightarrow$ \SBv{i-j+1} \\
+    Concatenation        & $::$      &                             & \SBv{n} $\times$ \SBv{m} $\rightarrow$ \SBv{n+m} \\ 
+    \hline               
+    Addition             & $+$       & \multirow{5}{*}{Arith.}     & \SBv{n} $\times$ \SBv{n} $\rightarrow$ \SBv{n} \\
+    Subtraction          & $-$       &                             & \SBv{n} $\times$ \SBv{n} $\rightarrow$ \SBv{n} \\
+    Multiplication       & $*$       &                             & \SBv{n} $\times$ \SBv{n} $\rightarrow$ \SBv{n} \\
+    Less than (signed)   & $<_s$     &                             & \SBv{n} $\times$ \SBv{n} $\rightarrow$ \SBoo \\
+    Less than (unsigned) & $<_u$     &                             & \SBv{n} $\times$ \SBv{n} $\rightarrow$ \SBoo \\
+    \hline
+    Bitwise and          & $\band$   & \multirow{3}{*}{Bitwise}    & \SBv{n} $\times$ \SBv{n} $\rightarrow$ \SBv{n} \\
+    Bitwise or           & $\bor$    &                             & \SBv{n} $\times$ \SBv{n} $\rightarrow$ \SBv{n} \\
+    Bitwise not          & $\bnot\_$ &                             & \SBv{n}                  $\rightarrow$ \SBv{n} \\
+    \hline
+  \end{tabular}
+  \end{center}
+  \vfill
+  \pause
+
+  Moreover, we have constants, e.g., $101101_{[6]}$
+
+\end{frame}
+
+\subsection{Semantic}
+
+\begin{frame}
+  \frametitle{\bitvector semantic}
+
+  \scriptsize
+
+  Each sort \SBv{n} is associated with a domain $D_n = \{ 0, 1, \ldots, 2^{n-1} \}$ \\ \pause
+  For example \SBv{4} is associated with $D_{4} = \{ 0, 1, \ldots, 15 \}$
+  \vfill
+  \pause
+  As usual, the semantic for the other terms depends on a particular {\bf assignment}
+  to the variables
+  \vfill
+  \pause
+  Each variable $\w{x}{n}$ is associated with a function \inter{\w{x}{n}} 
+  of type $D_n \rightarrow \{ 0, 1 \}$
+  \vfill
+  \pause
+  \scalebox{.7}{\input{semantic_example.pdf_t}}
+  \vfill
+  \pause
+  $nat_n(\_)$ is a helper meta-function, to facilitate the presentation 
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{\bitvector semantic}
+
+  \scriptsize
+  $$
+  \begin{array}{rcl}
+    %% Constant
+    \inter{\w{c}{n}} & := & \lambda x \in [0,n-1].\, 
+    \left\{
+    \begin{array}{ll}
+      0 & \mbox{ if the } x\mbox{-th bit is } 0 \\
+      1 & \mbox{ otherwise } 
+    \end{array}
+    \right. \\
+    \medskip \\
+    %% CONCATENATION
+    \inter{\w{t}{l} :: \w{s}{k}} & := & \lambda x \in [0,\ldots,l+k-1].\,
+    \left\{
+    \begin{array}{ll}
+      \inter{\w{s}{n}}(x) & \mbox{ if } x < l \\
+      \inter{\w{t}{n}}(x-l) & \mbox{ otherwise } 
+    \end{array}
+    \right. \\
+    \smallskip \\
+    %% SELECTION
+    \inter{\w{t}{n}[i:j]} & := & \lambda x \in [0,i-j+1].\, \inter{\w{t}{n}}(x+j) \\
+    \medskip \\
+    %% PLUS
+    \inter{\w{t}{n} + \w{s}{n}} & := & nat_n^{-1}(nat_n(\inter{\w{t}{n}}) + nat_n(\inter{\w{s}{n}}))\ \%\ 2^n \\
+    \medskip \\
+    %% BITAND
+    \inter{\w{t}{n} \band \w{s}{n}} & := & \lambda x \in [0,n-1].\,
+    \left\{
+    \begin{array}{ll}
+    0 & \mbox{ if } \inter{\w{t}{n}}(x) = 0 \\
+    0 & \mbox{ if } \inter{\w{s}{n}}(x) = 0 \\
+    1 & \mbox{ otherwise } 
+    \end{array} 
+    \right. \\
+    \medskip \\
+    %% LESS THAN
+    \inter{\w{t}{n} <_u \w{s}{n}} & := & 
+    \left\{
+    \begin{array}{ll}
+    \top & \mbox{ if } nat_n(\inter{\w{t}{n}}) <_{u} 
+                       nat_n(\inter{\w{s}{n}}) \\
+    \bot & \mbox{ otherwise } 
+    \end{array}
+    \right.
+  \end{array}
+  $$
+
+\end{frame}

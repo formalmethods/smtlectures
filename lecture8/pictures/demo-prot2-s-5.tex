@@ -1,0 +1,155 @@
+%% Compile with       pdflatex --jobname=demo-prot1-fig demo-prot1.tex
+
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amstext}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{xspace}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{mdwlist}
+\usepackage{courier}
+\usepackage{lscape}
+\usepackage{comment}
+\usepackage{wrapfig}
+\usepackage{multirow}
+\usepackage{bussproofs}
+\usepackage{pdftricks}
+\usepackage{cite}
+\usepackage{footmisc}
+\usepackage{balance}
+\usepackage{enumerate}
+\usepackage[normalem]{ulem}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{calc,backgrounds,automata,arrows}
+\pgfrealjobname{demo-prot2-s-5}
+
+\begin{document}
+
+\beginpgfgraphicnamed{demo-prot2-s-5-fig}
+\begin{tikzpicture}
+ \tikzstyle{arrow} = [->,shorten >=1pt,>=stealth'];
+ \tikzstyle{circles} = [circle,thick,node distance=4em,inner sep=0.05em];
+ \tikzstyle{state}   = [matrix,node distance=6em,inner sep=0.1em];
+ \tikzstyle{placez} = [node distance=5em,inner sep=0.2em];
+ \tikzstyle{placeZ1} = [draw=black,fill=white];
+ \tikzstyle{placeZ2} = [draw=black,fill=white];
+ \tikzstyle{placeY} = [draw=black,fill=white];
+ \tikzstyle{placeB} = [draw=blue!50,fill=blue!20];
+ \tikzstyle{placeR} = [draw=red!50,fill=red!20];
+ \tikzstyle{placeG} = [draw=green!50,fill=green!20];
+ \tikzstyle{placeW} = [draw=black!50,fill=black!10];
+
+ %\node[matrix,name = zbox] {
+ %  \node[placez,placeZ1,name=z1] {z1};  
+ %  \node[placez,placeZ2,name=z2, right of=z1] {z2}; \\
+ %};
+
+ %% node [4]
+ \node[state, name = node4] {
+   \node[circles,placeR,name=s40] {\scriptsize
+						$
+                                                 \begin{array}{l}
+			                           l = 3 \\
+						   c = 2
+			                         \end{array}
+			                        $};
+   \node[circles,placeR,name=s41, right of=s40] {\scriptsize
+                                                $
+                                                 \begin{array}{l}
+			                           l = 3 \\
+						   c = 2
+			                         \end{array}
+			                        $}; \\
+ };
+ \draw (node4.north west) rectangle (node4.south east);
+
+ %% node [3]
+ \node[state, name = node3, below of = node4] {
+   \node[circles,placeW,name=s30] {\scriptsize
+						$
+                                                 \begin{array}{l}
+			                           l = 4 \\
+						   c = 1
+			                         \end{array}
+			                        $};
+   \node[circles,placeR,name=s31, right of=s30] {\scriptsize
+                                                $
+                                                 \begin{array}{l}
+			                           l = 3 \\
+						   c = 1
+			                         \end{array}
+			                        $}; \\
+ };
+ \draw (node3.north west) rectangle (node3.south east);
+
+ %% node [2]
+ \node[state, name = node2, below of = node3] {
+   \node[circles,placeB,name=s20] {\scriptsize
+						$
+                                                 \begin{array}{l}
+			                           l = 1 \\
+						   c = 1
+			                         \end{array}
+			                        $};
+   \node[circles,placeR,name=s21, right of=s20] {\scriptsize
+                                                $
+                                                 \begin{array}{l}
+			                           l = 3 \\
+						   c = 1
+			                         \end{array}
+			                        $}; \\
+ };
+ \draw (node2.north west) rectangle (node2.south east);
+
+ %% node [1]
+ \node[state, name = node1, below of = node2] {
+   \node[circles,placeG,name=s10] {\scriptsize
+						$
+                                                 \begin{array}{l}
+			                           l = 2 \\
+						   c = 1
+			                         \end{array}
+			                        $};
+   \node[circles,placeR,name=s11, right of=s10] {\scriptsize
+                                                $
+                                                 \begin{array}{l}
+			                           l = 3 \\
+						   c = 1
+			                         \end{array}
+			                        $}; \\
+ };
+ \draw (node1.north west) rectangle (node1.south east);
+
+ %% node [0]
+ \node[state, name = node0, below of = node1] {
+   \node[circles,placeR,name=s00] {\scriptsize 
+                                                $
+                                                 \begin{array}{l}
+			                           l = 3
+			                         \end{array}
+			                        $};
+   \node[circles,placeR,name=s01, right of=s00] {\scriptsize
+                                                 $
+                                                 \begin{array}{l}
+			                           l = 3
+			                         \end{array}
+			                        $}; \\
+ };
+ \draw (node0.north west) rectangle (node0.south east);
+
+ \path (node4) edge [arrow] node [right] {\tt t3\_z1} (node3);
+ \path (node3) edge [arrow] node [right] {\tt t4\_z1} (node2);
+ \path (node2) edge [arrow] node [right] {\tt t1\_z1} (node1);
+ \path (node1) edge [arrow] node [right] {\tt t2\_z1} (node0);
+ %\path (node0) edge [arrow, bend left] node [below] {} (node0);
+
+\end{tikzpicture}
+\endpgfgraphicnamed
+
+\end{document}
+
+

@@ -1,0 +1,245 @@
+\begin{frame}
+  \frametitle{Handling equalities: Union Find}
+
+  \vfill
+  Let's focus first on conjunctions of positive equalities 
+  between variables, (functions, congruence, and negated
+  equalities are not considered for the moment)
+  \vfill\pause
+  Union-Find algorithms (Tarjan). It is based on the notion
+  of {\bf equivalence classes}. Equivalence classes
+  form a partition of the set of variables $V$, i.e.,
+  \begin{itemize}
+    \item each partition is non empty
+    \item each partition is disjoint
+    \item the union of the partitions is $V$
+  \end{itemize}
+  \vfill\pause
+  Let $\varphi^+$ be a conjunction of positive equalities: 
+  Union-Find will find the partition of $V$ such that:
+  \vfill
+  \begin{center}
+    $x$, $y$ are in the same partition iff $\varphi^+ \Rightarrow x=y$
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Union-Find}
+
+  Input: a conjunction of positive equalities $\varphi^+$\\
+  (e.g., $\varphi^+ \equiv\ x\!=\!y\ \wedge\ w\!=\!a\ \wedge\ w\!=\!b$, $V \equiv \{ x,y,w,z,a,b,c \}$) 
+  \vfill
+  Initialization: one equivalence class per each variable in $V$
+  $$
+  \{\ {\bf x}\ \}\quad\quad\{\ {\bf y}\ \}\quad\quad\{\ {\bf z}\ \}\quad\quad
+  \{\ {\bf w}\ \}\quad\quad\{\ {\bf a}\ \}\quad\quad\{\ {\bf b}\ \}\quad\quad\{\ {\bf c}\ \}
+  $$
+  \vfill\pause
+  For each equality $s=t$ in $\varphi^+$, merge the class containing $s$ with that containing $t$ (e.g., $x=y$)
+  $$
+  \{\ {\bf x}, y\ \}\quad\quad\{\ {\bf z}\ \}\quad\quad\{\ {\bf w}\ \}\quad\quad\{\ {\bf a}\ \}\quad\quad\{\ {\bf b}\ \}\quad\quad\{\ {\bf c}\ \}
+  $$
+  \vfill\pause
+  The final situation is the desired partition
+  $$
+  \{\ {\bf x}, y\ \}\quad\quad\{\ {\bf z}\ \}\quad\quad\{\ w, {\bf a}, b\ \}\quad\quad\{\ {\bf c}\ \}
+  $$
+  Notice that $\varphi^+ \Rightarrow s=t$ iff $s$, $t$ in the same partition
+  \vfill
+  A variable per class is nominated {\bf representant}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Implementing Union-Find}
+
+  \scriptsize
+
+  We assume each variable $x$ is a {\tt Node * x}
+  \begin{columns}
+  \begin{column}{.7\textwidth}
+  \begin{verbatim}
+    struct Node { 
+      int    size;     // Keep track of a class size
+      int    rank;     // Keep track of a class rank
+      Node * root;     // Points to class' representant
+    };
+  \end{verbatim} 
+  \end{column}
+  \begin{column}{.3\textwidth}
+    \begin{center}
+    \input{node}
+    \end{center}
+  \end{column}
+  \end{columns}
+  initialized with size = 1, rank = 0, and root = $x$ 
+  \vfill
+  \begin{columns}
+
+  \begin{column}{.45\textwidth}
+    \pause
+    \begin{overlayarea}{.44\textwidth}{4cm}
+    \only<2-4|handout:0>{
+    \begin{tabbing}
+      asd \= ad \= sd \= asd \kill
+      1 \> {\bf procedure} Union( $x$, $y$ ) \\
+      2 \> assert( $x$ == $x$.root \&\& $y$ == $y.root$ ) \\
+      3 \> if ( $x$ == $y$ ) return \\
+      4 \> $x$.root = $y$ \\
+      \\
+      \\
+      \\
+      \\
+      \\
+      \\
+      \\
+      \\
+      \\
+    \end{tabbing}
+   }
+    \only<5>{
+    \begin{tabbing}
+      asd \= ad \= sd \= asd \kill
+      1 \> {\bf procedure} Union( $x$, $y$ ) \\
+      2 \> assert( $x$ == $x$.root \&\& $y$ == $y.root$ ) \\
+      3 \> if ( $x$ == $y$ ) return \\
+      4 \> if ( $x$.rank $<$ $y$.rank ) \\
+      5 \> \> $x$.root = $y$ \\
+      6 \> \> $y$.size = $y$.size $+$ $x$.size \\
+      7 \> else if ( $x$.rank $>$ $y$.rank ) \\
+      8 \> \> $y$.root = $x$ \\
+      9 \> \> $x$.size = $x$.size $+$ $y$.size \\
+     10 \> else \\
+     11 \> \> $x$.root = $y$ \\
+     12 \> \> $x$.size = $x$.size $+$ $y$.size \\
+     13 \> \> $x$.rank = $x$.rank $+ 1$ \\
+    \end{tabbing}
+   }
+   \end{overlayarea}
+  \end{column}
+  
+  \begin{column}{.35\textwidth}
+    \pause
+    \begin{tabbing}
+      asd \= ad \= sd \= asd \kill
+      1 \> {\bf procedure} Find( $x$ ) \\
+      2 \> $r = x$ \\
+      3 \> if ( $r$ $\not=$ $r$.root ) \\
+      4 \> \> $r$ = Find( $r$.root ) \\
+      5 \> return $r$ \\
+      \\
+      \pause\\
+      1 \> {\bf procedure} Union-Find( $\varphi^+$ ) \\
+      2 \> foreach ( $x=y \in \varphi^+$ ) \\  
+      3 \> \> $x =$ Find( $x$ ) \\
+      4 \> \> $y =$ Find( $y$ ) \\
+      5 \> \> Union( $x$, $y$ )
+    \end{tabbing}
+  \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example}
+
+  \scriptsize
+
+  $\varphi^+ \equiv\ x\!=\!y\ \wedge\ w\!=\!a\ \wedge\ w\!=\!b$
+  \vfill
+  \begin{center}
+  \input{example_1_1}
+  \vfill\pause
+  Processing $x=y$. State after Union( Find( $x$ ), Find( $y$ ) ) 
+  \input{example_1_2}
+  \vfill\pause
+  Processing $w=a$. State after Union( Find( $w$ ), Find( $a$ ) ) 
+  \input{example_1_3}
+  \vfill\pause
+  Processing $w=b$. State after Union( Find( $w$ ), Find( $b$ ) ) 
+  \input{example_1_4}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Complexity}
+
+  \scriptsize
+
+  If we have $n$ input variables\vfill
+  Union complexity: \pause $O(1)$ \\ \pause
+  Find complexity: $O(\log n)$ \pause
+  \vfill
+  The complexity of Find is linear in the rank (height) of the trees. 
+  However because Union does not increase rank unless necessary, 
+  trees are always {\bf balanced}. The following invariant holds
+  \begin{exampleblock}{Invariant}
+    For each representant $x$, $2^{x.rank} \leq x.size$ 
+  \end{exampleblock} 
+  Worst case $\quad\quad x.size = n\quad\quad$ and so $\quad\quad x.rank = \log_2 n\quad\quad$ 
+  \vfill\pause
+  If $m$ equalities $n$ variables, worst case of $O(m\log n)$
+  \vfill
+  There is an improvement for Find, called {\bf path compression},
+  that decrease the bound to $O(m\alpha(m,n))$, where $\alpha$ is
+  the inverse of Ackermann's function ($\alpha(m,n) \leq 4$ in practice)
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Quick-Find approach}
+
+  \scriptsize
+
+  \begin{verbatim}
+    struct Node { 
+      int    size;     // Keep track of a class size
+      Node * next;     // Next element in eq. class (circular list)
+      Node * root;     // Points to class' representant
+    };
+  \end{verbatim} 
+  initialized as size = 0, next = $x$, root = $x$
+  \vfill
+  \begin{columns}
+
+  \begin{column}{.45\textwidth}
+    \pause
+    \begin{tabbing}
+      asd \= ad \= sd \= asd \kill
+      1 \> {\bf procedure} Union( $x$, $y$ ) \\
+      2 \> assert( $x$ == $x$.root \&\& $y$ == $y$.root ) \\
+      3 \> if ( $x$ == $y$ ) return \\
+      4 \> if ( $x$.size $>$ $y$.size ) \\
+      5 \> \> SWAP( $x$, $y$ ) \\
+      6 \> $s = x$.next \\
+      7 \> while ( $s \not= x$ ) \\
+      8 \> \> $s$.root $=$ $y$ \\
+      9 \> \> $s = s$.next \\
+     10 \> SPLICE( $x$, $y$ ) \\
+     11 \> $y$.size = $y$.size $+$ $x$.size \\
+    \end{tabbing}
+  \end{column}
+  
+  \begin{column}{.35\textwidth}
+    \begin{tabbing}
+      asd \= ad \= sd \= asd \kill
+      1 \> {\bf procedure} Find( $x$ ) \\
+      2 \> return $x.root$ \\
+      \\
+      \\
+      1 \> {\bf procedure} Union-Find( $\varphi^+$ ) \\
+      2 \> foreach ( $x=y \in \varphi^+$ ) \\  
+      3 \> \> $x =$ Find( $x$ ) \\
+      4 \> \> $y =$ Find( $y$ ) \\
+      5 \> \> Union( $x$, $y$ )
+    \end{tabbing}
+  \end{column}
+
+  \end{columns}
+  \vfill\pause
+  Union $O(n)$, Find $O(1)$, Union-Find $O(n\log n)$
+
+\end{frame}

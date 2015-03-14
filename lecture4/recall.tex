@@ -1,0 +1,121 @@
+\subsection{Intro}
+
+\begin{frame}
+  \frametitle{Eager and Lazy}
+
+  \scriptsize
+
+  SMT can be reduced to SAT, but requires discovering and
+  adding incompatibilities between \tatoms
+  \vfill
+  Eager and Lazy refers to the time in which these incompatibilities
+  are added to the Boolean structure of the problem
+  \begin{itemize}
+    \item eager: immediately, before \satsolver is called as black-box
+    \item {\bf lazy}: on demand, during \satsolver's search
+  \end{itemize}
+  \vfill
+    \begin{tabular}{ccc}
+      Eager & & Lazy \\
+      \begin{minipage}{.4\textwidth}
+          \scalebox{.3}{\input{eager.pdf_t}}
+      \end{minipage}
+      & ~~~~~ &
+      \begin{minipage}{.4\textwidth}
+          \scalebox{.3}{\input{lazy.pdf_t}}
+      \end{minipage}
+    \end{tabular}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lazy Approach}
+
+  \scriptsize
+
+  The Lazy Approach builds on top of SAT and of available and well known
+  {\bf decision procedures}, which we call {\bf theory solvers} (\tsolvers)
+  \vfill
+  Examples of these \tsolvers are the Union-Find procedure for equality, 
+  and the Simplex Algorithm for Linear Rational Arithmetic
+  \vfill
+  These procedures are very efficient in handling {\bf conjunctions} of \tatoms,
+  but they don't know how to handle arbitrary Boolean operators
+  \vfill
+  \pause
+  Lazy SMT can be seen as an efficient mechanism to extend these procedures
+  to handle generic Boolean combinations of \tatoms 
+  \vfill
+  This is achieved with a tight integration between a SAT-solver and the
+  \tsolver
+  \vfill
+  In the following we assume that 
+  \begin{enumerate}[$(i)$]
+    \item \T is decidable, and that 
+    \item a \tsolver for conjunctions of \tatoms exists
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{A bit of notation}
+
+  \scriptsize
+
+  We will use the following notation
+  \vfill
+  \begin{center}
+  \ra{1.8} 
+  \begin{tabular}{cl}
+  \hline
+  Symbol            & Meaning \\
+  \hline
+  $\varphi$         & original formula, in some background theory \T \\
+  $\babst{\varphi}$ & the Boolean abstraction of $\varphi$ \\
+  $\mu$             & an assignment for $\varphi$ \\
+  $\babst{\mu}$     & the assignment for $\babst{\varphi}$ induced by $\mu$ \\
+  \hline
+  \end{tabular}
+  \end{center}
+  \vfill
+  \pause
+  E.g., where \T is \Lia (Linear Integer Arithmetic)
+  $$
+  \ra{1.8} 
+  \begin{array}{rccccccc}
+    \varphi \equiv         & (x + y \leq 0) & \wedge & (x = 0) & \wedge & (\neg (y = 1) & \vee & (x = 1) ) \\
+    \babst{\varphi} \equiv & a_1            & \wedge & a_2     & \wedge & (\neg a_3 & \vee & a_4     ) \\ 
+    \mu     \equiv         & \multicolumn{7}{l}{\{ x \mapsto 0, y \mapsto 0 \}}       \\
+    \babst{\mu} \equiv     & \multicolumn{7}{l}{\{ a_1 \mapsto \top, a_2 \mapsto \top, a_3 \mapsto \bot, a_4 \mapsto \bot \}}
+  \end{array}
+  $$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{A bit of notation}
+
+  \scriptsize
+  $$
+  \ra{1.8} 
+  \begin{array}{rccccccc}
+    \varphi \equiv         & (x + y \leq 0) & \wedge & (x = 0) & \wedge & (\neg (y=1) & \vee & (x = 1) ) \\
+    \babst{\varphi} \equiv & a_1            & \wedge & a_2     & \wedge & (\neg a_3 & \vee & a_4     ) \\ 
+    \mu     \equiv         & \multicolumn{7}{l}{\{ x \mapsto 0, y \mapsto 0 \}}       \\
+    \babst{\mu} \equiv     & \multicolumn{7}{l}{\{ a_1 \mapsto \top, a_2 \mapsto \top, a_3 \mapsto \bot, a_4 \mapsto \bot \}}
+  \end{array}
+  $$
+  \vfill
+  Notice that
+  $$\babst{\mu} \equiv \{ a_1 \mapsto \top, a_2 \mapsto \top, a_3 \mapsto \bot, a_4 \mapsto \bot \} \equiv \{ a_1, a_2, \neg a_3, \neg a_4 \}$$
+  is nothing but
+  $$\{\ (x+y \leq 0),\ (x=0),\ \neg (y=1),\ \neg (x=1)\ \}$$
+  i.e., it is a {\bf conjunction} of constraints, whose satisfiability can be checked with a \tsolver
+  \vfill\pause
+  In other words, the \tsolver can tell if $\babst{\mu}$ is \T-satisfiable
+  \vfill
+  If so, then there is a model $\mu$, that induces $\babst{\mu}$, and if
+  $\babst{\mu}$ is a model for $\babst{\varphi}$ then $\mu$ is also a
+  model for $\varphi$ (take some time to think about it at home)
+
+\end{frame}

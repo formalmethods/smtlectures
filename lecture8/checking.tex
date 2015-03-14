@@ -1,0 +1,115 @@
+\subsection{Checking}
+
+\begin{frame}
+  \frametitle{Checking (= Reachability)}
+
+  To establish if a model satisfies a safety 
+  property amounts to check if some
+  {\bf bad state is reachable} from the set
+  of initial states
+  \vfill
+  This can be done automatically by {\bf visiting} the
+  set of states that are {\bf reachable} from the initial
+  state with the application of a transition
+  \vfill
+  \pause
+  Let $S^{(0)}$ be the set of initial states.
+  Algorithmically, it amounts to implement the following loop
+  (iteration $i$)
+  \vfill
+  \begin{boxedminipage}{\textwidth}
+  \begin{center}
+  Forward-Reachability
+  \begin{tabular}{rcl}
+     \\
+       {\bf Safety Check} & ~~ & If $S^{(i)}$ contains a bad state, return {\bf unsafe} \\
+        {\bf Next States} & ~~ & Compute $S^{(i+1)} := S^{(i)} \cup T(S^{(i)})$ \\
+    {\bf Fix-Point Check} & ~~ & If $S^{(i+1)} \equiv S^{(i)}$, return {\bf safe} 
+  \end{tabular}
+  \end{center}
+  \end{boxedminipage}
+  \vfill
+  $T(S^{(i)}) = $ states that can be reached from $S^{(i)}$ with a transition
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Checking - Forward Reachability - Property Verified}
+  \begin{boxedminipage}{\textwidth}
+  \begin{center}
+  Forward-Reachability
+  \begin{tabular}{rcl}
+     \\
+       {\bf Safety Check} & ~~ & \colthrat{If $S^{(i)}$ contains a bad state, return {\bf unsafe}}{2,5,8,11|handout:0} \\
+        {\bf Next States} & ~~ & \colthrat{Compute $S^{(i+1)} := S^{(i)} \cup T(S^{(i)})$}{3,6,9,12|handout:0} \\
+    {\bf Fix-Point Check} & ~~ & \colthrat{If $S^{(i+1)} \equiv S^{(i)}$, return {\bf safe}}{4,7,10,13} 
+  \end{tabular}
+  \end{center}
+  \end{boxedminipage}
+  \vfill
+  \begin{overlayarea}{\textwidth}{4cm}
+    \only<1,2|handout:0>{\scalebox{.6}{\input{forward_1.pdf_t}}}
+    \only<3-5|handout:0>{\scalebox{.6}{\input{forward_2.pdf_t}}}
+    \only<6-8|handout:0>{\scalebox{.6}{\input{forward_3.pdf_t}}}
+    \only<9-11|handout:0>{\scalebox{.6}{\input{forward_4.pdf_t}}}
+    \only<12,13>{\scalebox{.6}{\input{forward_5.pdf_t}}}
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Checking - Forward Reachability - Property Not Verified}
+  \begin{boxedminipage}{\textwidth}
+  \begin{center}
+  Forward-Reachability
+  \begin{tabular}{rcl}
+     \\
+       {\bf Safety Check} & ~~ & \colthrat{If $S^{(i)}$ contains a bad state, return {\bf unsafe}}{1} \\
+        {\bf Next States} & ~~ & Compute $S^{(i+1)} := S^{(i)} \cup T(S^{(i)})$ \\
+    {\bf Fix-Point Check} & ~~ & If $S^{(i+1)} \equiv S^{(i)}$, return {\bf safe}
+  \end{tabular}
+  \end{center}
+  \end{boxedminipage}
+  \vfill
+  \begin{overlayarea}{\textwidth}{4cm}
+    \only<1|handout:0>{\scalebox{.6}{\input{forward_6.pdf_t}}}
+    \only<2>{\scalebox{.6}{\input{forward_7.pdf_t}}}
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Back to the washing machine}
+
+Iteration: \only<1|handout:0>{0}\only<2|handout:0>{1}\only<3|handout:0>{2}\only<4|handout:0>{3}\only<5>{4 - Fix Point Reached - System is SAFE}
+  \vfill
+  \begin{center}
+    \only<1|handout:0>{\input{model_4_1}}
+    \only<2|handout:0>{\input{model_4_2}}
+    \only<3|handout:0>{\input{model_4_3}}
+    \only<4|handout:0>{\input{model_4_4}}
+    \only<5>{\input{model_4_5}}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Checking - Backward Reachability}
+  \begin{boxedminipage}{\textwidth}
+  \begin{center}
+  Backward-Reachability ($S^{(0)} \equiv$ ``bad states'')
+  \begin{tabular}{rcl}
+     \\
+       {\bf Safety Check} & ~~ & If $S^{(i)}$ contains an initial, return {\bf unsafe} \\
+        {\bf Next States} & ~~ & Compute $S^{(i+1)} := S^{(i)} \cup T^{-1}(S^{(i)})$ \\
+    {\bf Fix-Point Check} & ~~ & If $S^{(i+1)} \equiv S^{(i)}$, return {\bf safe}
+  \end{tabular}
+  \end{center}
+  \end{boxedminipage}
+  \vfill
+  \begin{overlayarea}{\textwidth}{4cm}
+    \only<1|handout:0>{\scalebox{.6}{\input{backward_1.pdf_t}}}
+    \only<2>{\scalebox{.6}{\input{backward_2.pdf_t}}}
+  \end{overlayarea}
+
+\end{frame}

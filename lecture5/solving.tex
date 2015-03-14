@@ -1,0 +1,146 @@
+\subsection{Solving}
+
+\begin{frame}
+  \frametitle{Solving}
+
+  Suppose that no negative cycle exists in $G(V,E)$ for $\babst{\mu}$, 
+  how do we find a model $\mu$ for the integer variables ?
+  \vfill
+  \pause
+  State-of-the-art methods employ SSSP (Single Source Shortest Paths) algorithms,
+  such as the {\bf Bellman-Ford} algorithm (or its variations), as follows:
+  \begin{itemize}
+    \item we add an artificial vertex $I$ to $V$, and add $\{ (I,x_1;0), \ldots, (I,x_n;0) \}$ to $E$
+          (notice that this never creates negative cycles)
+    \vfill
+
+    \item Compute the shortest paths from source $I$ (run Bellman-Ford). Let $\pi(x)$ be the shortest path
+          from $I$ to $x$, for all $x \in V$
+    \vfill
+
+    \item The model $\mu$ can be computed as $\mu(x) = -\pi(x)$ for all $x \in V$ (see later why)
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bellman-Ford} 
+
+  $\pi(x)$: current distance of $x$ from $I$\\
+  $TBV$: queue of vertexes To Be Visited\\
+
+  \begin{tabbing}
+  as \= a \= a \= a \= as \= asdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+  1  \> $\pi(x) = \infty$ for all $x \in V, x \not= I$ \\
+  2  \> $\pi(I) = 0$ \\
+  3  \> $TBV.pushBack( I )$ \\
+  4  \> while ( $TBV.size(\ ) > 0$ ) \\
+  5  \> \> $s = TBV.popFront(\ )$ \\
+  6  \> \> foreach $(s,t;w) \in E$         \> \> \> \> // for each outgoing edge \\
+  7  \> \> \> if ( $\pi(t) - \pi(s) > w$ )    \> \> \> // is too far ? \\
+  8  \> \> \> \> $\pi(t) = \pi(s) + w$           \> \> // relax (decrease $\pi(t)$) \\
+  9  \> \> \> \> if ( $TBV.has( t ) == false$ ) \\ 
+  10 \> \> \> \> \> $TBV.pushBack( t )$             \> // enqueue t if not there \\
+  \end{tabbing}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bellman-Ford, Example} 
+
+  \scriptsize
+    
+  $\pi(x)$: current distance of $x$ from $I$\\
+  $TBV$: queue of vertexes To Be Visited\\
+
+  \begin{columns}
+
+  \begin{column}{.45\textwidth}
+    \begin{tabbing}
+    as \= a \= a \= a \= as \= asdfasdfasdfasdfasdfasdfasdfasdf \= \kill
+    \> \coloneat{$\pi(x) = \infty$ for all $x \in V, x \not= I$}{3|handout:0} \\
+    \> \coloneat{$\pi(I) = 0$}{3|handout:0} \\
+    \> \coloneat{$TBV.pushBack( I )$}{3|handout:0} \\
+    \> while ( $TBV.size(\ ) > 0$ ) \\
+    \> \> \coloneat{$s = TBV.popFront(\ )$}{4,7,10|handout:0} \\
+    \> \> \coloneat{foreach $(s,t;w) \in E$}{5,8,11|handout:0} \\
+    \> \> \> \coloneat{if ( $\pi(t) - \pi(s) > w$ )}{5,8,11|handout:0} \\
+    \> \> \> \> \coloneat{$\pi(t) = \pi(s) + w$}{5,8,11|handout:0} \\
+    \> \> \> \> \coloneat{if ( $TBV.has( t ) == false$ )}{5,8,11|handout:0} \\ 
+    \> \> \> \> \> \coloneat{$TBV.pushBack( t )$}{5,8,11|handout:0} \\
+    \end{tabbing}
+
+    $TBV = $ [ \only<3|handout:0>{$I$}\only<5,6|handout:0>{$x$}\only<6|handout:0>{$,\,$}\only<6-9|handout:0>{$y,$}\only<6-12|handout:0>{$z,w,t$} ] \\
+    Current vertex: \only<4,5|handout:0>{$I$}\only<7,8|handout:0>{$x$}\only<10,11|handout:0>{$y$} \\
+    Current edge: \only<5|handout:0>{$(I,x;0)$}\only<11|handout:0>{$(y,z;-1)$} 
+  \end{column}
+
+  \begin{column}{.55\textwidth}
+    \begin{center}
+    \begin{overlayarea}{.55\textwidth}{3cm}
+      \only<1|handout:0>{\input{example_bf}}
+      \only<2|handout:0>{\input{example_bf_1}}
+      \only<3|handout:0>{\input{example_bf_2}}
+      \only<4|handout:0>{\input{example_bf_3}}
+      \only<5|handout:0>{\input{example_bf_4}}
+      \only<6|handout:0>{\input{example_bf_5}}
+      \only<7,8|handout:0>{\input{example_bf_6}}
+      \only<9|handout:0>{\input{example_bf_5}}
+      \only<10|handout:0>{\input{example_bf_7}}
+      \only<11|handout:0>{\input{example_bf_8}}
+      \only<12|handout:0>{\input{example_bf_9}}
+      \only<13|handout:0>{\input{example_bf_10}}
+      \only<14>{\input{example_bf_11}}
+    \end{overlayarea}
+    \end{center}
+  \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bellman-Ford, consideration}
+
+  \scriptsize
+
+  \begin{exampleblock}{Invariant}
+  At the end of BF, $\pi(x)$ holds the shortest distance from $I$ to $x$, for all $x \in V$ \\
+  \end{exampleblock}
+  \vfill
+  \pause
+  \begin{lemma}[Shortest Path]
+  At the end of BF, $\pi(y) - \pi(x) \leq c$ holds for all $(x,y;c) \in E$
+  \end{lemma}
+  \vfill
+  \pause
+  \begin{proof}
+  Suppose, for the sake of contradiction, that for an edge $(x,y;c)$, we have $\pi(y) - \pi(x) > c$
+    \begin{center}
+      \input{arc_proof}
+    \end{center}
+    \vspace{-30pt}
+    $\pi(x)$ is the shortest dist. from $I$ to $x$ (by Invariant). But since $\pi(y) > \pi(x) + c$, 
+    the shortest path from $I$ to $y$ is $\pi(x) + c$. So $\pi(y)$ is not the shortest dist. Contradiction.
+  \end{proof}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Finding a model $\mu$}
+
+  Because of the previous lemma we have that
+  \vfill
+  \begin{center}
+    $\pi(y) - \pi(x) \leq c\quad\quad$ holds for all $(x,y;c) \in E$
+  \end{center}
+  \vfill
+  So, if we take $\quad\quad\mu(x) = -\pi(x)\quad\quad$ we have that
+  \vfill
+  \begin{center}
+    $\mu(x) - \mu(y) \leq c\quad\quad$ holds for all constraints in $\babst{\mu}$
+  \end{center}
+  \vfill
+  and therefore $\mu$ is a model
+
+\end{frame}

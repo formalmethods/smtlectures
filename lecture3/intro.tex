@@ -1,0 +1,243 @@
+\begin{frame}
+  \frametitle{Disclaimer}
+
+  The SAT-Solving algorithm described as follows is {\bf not} the
+  only approach existing
+  \begin{itemize}
+    \item BDDs
+    \item Quantifier Elimination
+    \item Random SAT-Solving
+  \end{itemize}
+  \vfill
+  We study the DPLL/CDCL approach as it is precise (not approximate),
+  it uses a linear amount of memory, and very robust
+  \vfill
+  It is fair to say that it is the most used approach by industry
+  for pure solving
+  \vfill
+  The approach evolved in many years, many groups have contributed. Here
+  we do not see the history of this evolution but just the {\bf final product} 
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Complexity Considerations}
+
+  SAT is ``the'' NP-Complete problem
+  \vfill
+  It is unlikely to be solved in polynomial time
+  \vfill 
+  Most likely, it takes some $O(2^n)$ time complexity
+  for an algorithm to solve SAT
+  \vfill 
+  Complexity of SAT cannot be alleviated by faster
+  machines (only by parallelism, if we ever reach
+  that technology). Suppose you can execute $M$ instructions
+  in 1 hour, then the maximum $n$ you can handle is
+  \vfill
+  \begin{center}
+  \begin{tabular}{ll}
+    \hline
+    Speed of machine & Max input size in 1 hour \\
+    \hline
+    1x               & $log_2(M) = n$ \\
+    100x             & $log_2(100 \cdot M) \approx n + 3.3$ \\
+    1000000x         & $log_2(1000000 \cdot M) \approx n + 19$ \\
+    \hline
+  \end{tabular}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{CNF Formul\ae}
+
+  \scriptsize
+
+  From now on we shall focus on solving \formulae in Conjunctive Normal Form {\bf CNF}
+
+  $$ C_1 \wedge C_2  \wedge \ldots \wedge C_n  $$  
+
+  where each $C_i$ is a {\bf clause}, a disjunction of the kind
+
+  $$( l_1 \vee l_2 \vee \ldots l_m )$$  
+
+  where every  $l_i$ is a {\bf literal}, which is a variable or a negated Boolean variable
+
+  $$
+  a\ \mbox{ or }\ \neg a
+  $$
+
+  \vfill
+  \pause
+  For simplicity we will write them as a set of clauses, omitting the $\wedge$, like
+
+  $$
+  \begin{array}{l}
+  (\neg a_1 \vee a_2) \\
+  (\neg a_1 \vee a_3 \vee a_9) \\
+  (\neg a_2 \vee \neg a_3 \vee a_4) \\
+  (\neg a_4 \vee a_5 \vee a_{10})
+  \end{array}
+  $$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Basic Notation}
+
+  We indicate a (possibly partial) {\bf assignment} as the set of literals that
+  are $\top$ under it, i.e., we write the assignment 
+  $$
+  \{ a_1 \mapsto \top, a_2 \mapsto \top, a_3 \mapsto \bot, a_4 \mapsto \bot, a_9 \mapsto \top \}
+  $$
+  as
+  $$
+  \{ a_1, a_2, \neg a_3, \neg a_4, a_9 \}
+  $$
+  \vfill
+  \pause
+  An assignment is used to evaluate a formula, e.g.,
+  $$
+  \begin{array}{l}
+  (\colone{\neg a_1} \vee \coltwo{a_2}) \\
+  (\colone{\neg a_1} \vee \colone{a_3} \vee \coltwo{a_9}) \\
+  (\colone{\neg a_2} \vee \coltwo{\neg a_3} \vee \colone{a_4}) \\
+  (\coltwo{\neg a_4} \vee a_5 \vee a_{10})
+  \end{array}
+  $$
+  evaluates to $\top$ under the assignment above 
+  \pause
+  \begin{itemize}
+    \item at least one \coltwo{this colored} literal in each clause to make it $\top$
+    \item all \colone{this colored} literals in one clause to make it $\bot$
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Simple Facts}
+
+  SAT-Solving is (the art of) finding the assignment satisfying all clauses
+  \vfill
+  \pause
+  The assignment evolves {\bf incrementally} by taking {\bf Decisions}, 
+  starting from empty $\{\ \}$, but it can be {\bf backtracked} if found wrong
+  \vfill
+  \pause
+  The evolution of the assignment can be represented as a {\bf tree}
+  \vfill
+  \pause
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+    $$
+      \begin{array}{l}
+      (\coltwoat{\neg a_1}{5-7} \vee a_3 \vee a_9) \\
+      (\coloneat{\coltwoat{\neg a_2}{6}}{7} \vee \neg a_3 \vee a_4) \\
+      (\coloneat{a_1}{5-7} \vee \coltwoat{\coloneat{a_2}{6}}{7}) \\
+      (\neg a_4 \vee a_5 \vee a_{10})
+      \end{array}
+    $$
+    \begin{overlayarea}{\textwidth}{.3cm}
+      \only<4|handout:0>{$\{\ \}$}
+      \only<5|handout:0>{$\{ \neg a_1 \}$}
+      \only<6|handout:0>{$\{ \neg a_1, \neg a_2 \}$}
+      \only<7|handout:0>{$\{ \neg a_1, a_2 \}$}
+      \only<8>{$\{ \ldots \}$}
+    \end{overlayarea}
+    \end{minipage}
+    & ~~~~ &
+    \begin{minipage}{.4\textwidth}
+    \begin{overlayarea}{\textwidth}{5cm}
+      \only<1-3|handout:0>{\scalebox{.7}{\input{search_1.pdf_t}}}
+      \only<4|handout:0>{\scalebox{.7}{\input{search_1_1.pdf_t}}}
+      \only<5|handout:0>{\scalebox{.7}{\input{search_1_2.pdf_t}}}
+      \only<6|handout:0>{\scalebox{.7}{\input{search_1_3.pdf_t}}}
+      \only<7|handout:0>{\scalebox{.7}{\input{search_1_4.pdf_t}}}
+      \only<8>{\scalebox{.7}{\input{search_1_5.pdf_t}}}
+    \end{overlayarea}
+    \end{minipage}
+  \end{tabular}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Simple Facts}
+
+  There are assignments which can be trivially driven towards the right direction.
+  In the example below, given the current assignment, the third clause can be satisfied
+  only by setting $a_2 \mapsto \top$ 
+  \vfill
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+    $$
+      \begin{array}{l}
+      (\coltwoat{\neg a_1}{1-} \vee a_3 \vee a_9) \\
+      (\coloneat{\neg a_2}{2-} \vee \neg a_3 \vee a_4) \\
+      (\coloneat{a_1}{1-} \vee \coltwoat{a_2}{2-}) \\
+      (\neg a_4 \vee a_5 \vee a_{10})
+      \end{array}
+    $$
+    \begin{overlayarea}{\textwidth}{.3cm}
+      \only<1|handout:0>{$\{ \neg a_1 \}$}
+      \only<2->{$\{ \neg a_1, a_2 \}$}
+    \end{overlayarea}
+    \end{minipage}
+    & ~~~~ &
+    \begin{minipage}{.4\textwidth}
+    \begin{overlayarea}{\textwidth}{4cm}
+      \only<1:handout0>{\scalebox{.7}{\input{search_2_1.pdf_t}}}
+      \only<2->{\scalebox{.7}{\input{search_2_2.pdf_t}}}
+    \end{overlayarea}
+    \end{minipage}
+  \end{tabular}
+  \vfill
+  \pause
+  \pause
+  This step is called {\bf Boolean Constraint Propagation} (BCP). It represents
+  a {\bf forced} deduction. It triggers whenever all literals but one are assigned $\bot$
+  $$
+  (\colone{\neg a_1} \vee \colone{a_2} \vee \colone{\neg a_3} \vee \colone{a_4} \vee \neg a_5)
+  $$
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Simple Facts}
+
+  {\bf Decision-level}: in an assignment, it is the number of decisions taken 
+  \vfill
+  Clearly, BCPs do not contribute to increase the decision level
+  \vfill
+  When necessary, we will indicate decision level on top of literals $\dec{a}{5}$ in the assignment 
+  \vfill
+  \pause
+  Example:
+  \begin{center}
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+      \vfill
+      $\{ \dec{a_{10}}{0}, \dec{\neg a_{1}}{1}, \dec{a_3}{2}, \dec{\neg a_4}{3}, \dec{a_5}{3} \}$
+      \vfill
+    \end{minipage}
+    & &
+    \begin{minipage}{.4\textwidth}
+      \scalebox{.4}{\input{search_4.pdf_t}}
+    \end{minipage}
+  \end{tabular}
+  \end{center}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Simple Facts}
+  
+  The process of finding the satisfying assignment is called {\bf search}, and
+  in its basic version it evolves with {\bf Decisions}, {\bf BCPs}, and
+  {\bf backtracking}
+
+  \begin{center}
+  \scalebox{.5}{\input{search_3.pdf_t}}
+  \end{center}
+
+\end{frame}

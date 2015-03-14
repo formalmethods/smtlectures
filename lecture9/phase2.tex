@@ -1,0 +1,96 @@
+\begin{frame}[fragile]
+  \frametitle{Phase 2 - Connecting the \tsolver}
+
+  \begin{enumerate}[1.]
+
+    \item Create a new logic
+
+      \begin{enumerate}[a.]
+
+	\vfill
+
+	\item \verb|$ vim src/common/Global.h|
+
+	\vfill
+
+	\item Add \verb|, QF_SO| around line 196
+
+	\vfill
+
+	\item Add \verb|else if ( l == QF_SO ) return "QF_SO";| 
+	      around line 312
+
+	\vfill
+
+	\item Add \verb|using opensmt::QF_SO;| 
+	      around line 346
+
+	\vfill
+
+	\item \verb|$ vim src/api/OpenSMTContext.C| 
+
+	\vfill
+	  
+	\item Add \verb|else if ( strcmp( str, "QF_SO" ) == 0 ) l = QF_SO;|
+	      around line 88
+
+	\vfill
+	  
+	\item Compile again \verb|$ cd debug; make; cd ..| (to see
+	      if any typo was introduced)
+
+      \end{enumerate}
+
+  \end{enumerate} 
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Phase 2 - Connecting the \tsolver}
+
+  \begin{enumerate}[2.]
+
+    \item Allocate the solver
+
+      \begin{enumerate}[a.]
+
+	\scriptsize
+
+	\vfill
+
+	\item \verb|$ vim src/egraph/EgraphSolver.C|
+
+	\vfill
+
+	\item Add \verb|#include "SOSolver.h"| around line 29
+
+	\vfill
+
+	\item Add around line 853
+	\begin{verbatim}
+else if ( config.logic == QF_SO )
+{
+  tsolvers.push_back( new SOSolver( tsolvers.size( )
+                                  , "Simple Order Solver"
+                                  , config
+                                  , *this
+                                  , sort_store
+                                  , explanation
+                                  , deductions
+                                  , suggestions ) );
+  #ifdef STATISTICS
+    tsolvers_stats.push_back( new TSolverStats( ) );
+  #endif
+}
+	\end{verbatim}
+
+      \end{enumerate}
+
+      \vfill
+
+      \item Compile again \verb|$ cd debug; make; cd ..| (to see
+	    if any typo was introduced)
+
+  \end{enumerate} 
+
+\end{frame}

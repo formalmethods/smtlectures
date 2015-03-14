@@ -1,0 +1,28 @@
+\begin{tikzpicture}[auto]
+
+%
+% Styles
+%
+\tikzstyle{state} = [rectangle,draw=oproverblue!60,fill=oproverblue!20,thick]
+\tikzstyle{initialstate} = [rectangle,draw=mydarkgreen!80,fill=mydarkgreen!40,thick]
+\tikzstyle{badstate} = [rectangle,draw=red!60,fill=red!20,thick]
+\tikzstyle{tran}  = [->,>=stealth,semithick]
+
+\draw[fill=oproverblue!10,dashed] (0, 0) to [out=180,in=90] (-6,-2) 
+                                         to [out=-90,in=180]( 0,-2.5)
+                                         to [out=0,in=-90]  ( 6,-2)
+                                         to [out=90,in=0]   ( 0, 0);
+
+\node[initialstate] (000) at (  0,  -1)  {$\nodd{door=open}{engine=off}{tray=empty}$};
+\node[state]        (100) at ( -4,  -2)  {$\nodd{door=closed}{engine=off}{tray=empty}$};
+\node[state]        (001) at (  4, -2)   {$\nodd{door=open}{engine=off}{tray=full}$};
+%\node[state] (101) at ( -2, -4)  {$\nodd{door=closed}{engine=off}{tray=full}$};
+%\node[state] (110) at (  2, -4)  {$\nodd{door=closed}{engine=on}{tray=empty}$};
+\node[badstate] (011) at (  3, -6)  {$\nodd{door=open}{engine=on}{tray=full}$};
+%\node[state] (111) at ( -3, -6)  {$\nodd{door=closed}{engine=on}{tray=full}$};
+\node[badstate] (010) at ( -3, -6)  {$\nodd{door=open}{engine=on}{tray=empty}$};
+
+\draw[tran] (000) -- node {\scriptsize close\_door} (100);
+\draw[tran] (000) -- node {\scriptsize fill\_tray}  (001);
+
+\end{tikzpicture}

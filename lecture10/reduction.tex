@@ -1,0 +1,108 @@
+\section{Lecture 1 - Reduction to SAT}
+
+\begin{frame}
+  \frametitle{Solving SMT \formulae by reduction to SAT}
+
+  \scriptsize
+
+  Approaches to solve SMT \formulae are based on the observation
+  that SMT can be {\bf reduced} to SAT, i.e., the purely Boolean
+  Satisfiability Problem
+  \vfill
+  Consider for instance the \Lia formula
+  $$
+  \varphi\ \equiv\ (x - y \leq 0)\ \wedge\ (y - z \leq 0)\ \wedge\ ((z - x \leq -1)\ \vee\ (z - x \leq -2))
+  $$
+  We may use a Boolean variable $a$ to mean ``$x - y \leq 0$'' evaluates to $\top$
+  in the model. Similarly we could use $b, c, d$ for the other \tatoms, obtaining
+  $$
+  \psi\ \equiv\ a \wedge b \wedge (c \vee d)
+  $$
+  \vfill
+  \pause
+  However we are not done with the encoding ! In fact altough $\mu^\Boo \equiv \{ a, b, c \}$ 
+  is a (Boolean) model for $\psi$, the correspondent set of \tatoms $\{ x - y \leq 0, y - z \leq 0, z - x \leq -1 \}$
+  is not consistent in \Lia: we cannot extend $\mu^\Boo$ to a model $\mu$ that satisfies $\varphi$.
+  \pause
+  \vfill
+  This information can be added to the encoding in the following form
+  $$ \neg( a \wedge b \wedge c )$$
+  \pause
+  \vfill
+  Similarly we may derive {\bf all} the remaining incompatibilities
+  $$ \neg( a \wedge b \wedge d )\quad\quad \neg( \neg a \wedge \neg b \wedge \neg c )\quad\quad \neg( \neg a \wedge \neg b \wedge \neg d )$$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Solving SMT \formulae by reduction to SAT}
+
+  \scriptsize
+
+  Initial \Lia formula
+  $$
+  \varphi \equiv (x - y \leq 0) \wedge (y - z \leq 0) \wedge ((z - x \leq -1) \vee (z - x \leq -2))
+  $$
+  Putting all the conditions together we get the Boolean formula
+  $$ 
+  \psi \equiv\ a \wedge b \wedge (c \vee d)\ \wedge\ \neg( a \wedge b \wedge c )\ \wedge\ \neg( a \wedge b \wedge d )\ \wedge\
+  \neg( \neg a \wedge \neg b \wedge \neg c )\ \wedge\ \neg( \neg a \wedge \neg b \wedge \neg d )
+  $$ \pause
+  \vfill
+  Starting from $\varphi$ we have
+  \begin{enumerate}[$(i)$]
+    \item encoded the structure of $\varphi$
+    \item {\bf exhaustively} encoded all incompatible relations between \tatoms 
+  \end{enumerate} 
+  \vfill
+  \begin{theorem}[Exercise 4 - correctness of the encoding]
+    $\varphi$ is \T-satisfiable $\Leftrightarrow$ $\psi$ is satisfiable,
+    where $\psi$ is obtained from $\varphi$ with the steps $(i)$-$(ii)$
+  \end{theorem}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exercise 4 - Proof}
+
+  ($a_i$ is the Boolean variable corresponding to a \tatom $P_i$)
+  \vfill
+
+  ($\Rightarrow$)
+  \medskip \\
+  If $\varphi$ is \T-satisfiable, then it means that a model $\mu$ exists.
+  A model $\mu^\Boo$ for $\psi$ can be defined with $\mu^\Boo(a_i) = \mu(P_i)$.
+  \vfill\pause
+  
+  ($\Leftarrow$)
+  \medskip \\
+  Suppose that $\psi$ is satisfiable but $\varphi$ is not. If so, then
+  there is a model $\mu^\Boo$ (e.g., $\{ \neg a_1, a_3 \}$) such that 
+  its encoding (e.g., $(\neg P_1 \wedge P_3)$) represents an incompatible relation
+  of \tatoms. But if it is an incompatible relation, than its negation was
+  added to $\psi$ (e.g, $\neg ( a_1 \wedge a_3 )$), and it should not be satisfied
+  by $\mu^\Boo$. Contradiction.
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exercize 2}
+
+  \scriptsize
+
+  Given the unsatisfiable formula 
+  $$
+  \psi \equiv\ a \wedge b \wedge (c \vee d)\ \wedge\ \neg( a \wedge b \wedge c )\ \wedge\ \neg( a \wedge b \wedge d )\ \wedge\
+  \neg( \neg a \wedge \neg b \wedge \neg c )\ \wedge\ \neg( \neg a \wedge \neg b \wedge \neg d )
+  $$
+  show that $\neg( \neg a \wedge \neg b \wedge \neg c )$ and $\neg( \neg a \wedge \neg b \wedge \neg d )$ are redundant.
+  \vfill\pause
+  The last two clauses are redundant if 
+  $$a \wedge b \wedge (c \vee d)\ \wedge\ \neg( a \wedge b \wedge c )\ \wedge\ \neg( a \wedge b \wedge d )$$
+  is already unsatisfiable on its own. \pause In every model $a$ and $b$ must be assigned to $\top$. This simplifies
+  the formula to
+  $$(c \vee d)\ \wedge\ \neg( c )\ \wedge\ \neg( d )$$\pause
+  Now in every model $c$ and $d$ must be assigned to $\bot$. This simplifies the formula to
+  $$\bot$$
+
+\end{frame}

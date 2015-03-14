@@ -1,0 +1,24 @@
+\begin{frame}
+  \frametitle{Recall from last lecture}
+
+  The Lazy Approach for a theory \T is based on the tight integration of
+  \begin{itemize}
+    \item a CDCL \satsolver
+    \item a \tsolver, a decision procedure for \T
+  \end{itemize}
+  \vfill
+  \pause
+  The \satsolver enumerates Boolean models $\babst{\mu}$
+  \vfill
+  The \tsolver checks the consistency of $\babst{\mu}$ in \T
+  \vfill
+  \pause
+  For efficiency, it is desirable that the \tsolver
+  \begin{itemize}
+    \item Reasons incrementally (does not compute everything from scratch everytime)
+    \item Backtracks efficiently
+    \item Returns minimal conflicts
+    \item Performs Theory-Propagation
+  \end{itemize}
+
+\end{frame}

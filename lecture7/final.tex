@@ -1,0 +1,55 @@
+\begin{frame}
+  \frametitle{Layered Approach}
+
+  Since \Uf is the empty theory, it is contained in any other theory \T. So the following
+  implication holds
+  \begin{center}
+  If a conjunction $\varphi$ is \Uf-unsatisfiable, then it is \T-unsatisfiable
+  \end{center}
+  \vfill
+  Example:
+  $$
+    x + y \not= z + w\quad\wedge\quad x = z\quad\wedge\quad y = w
+  $$
+  is an \Lra-formula, but it is \Uf-unsatisfiable\pause
+  $$
+    plus(x,y) \not= plus(z,w)\quad\wedge\quad x = z\quad\wedge\quad y = w
+  $$
+  \vfill\pause
+  Therefore we can use \Uf-solver as a layer for \Lra-solver on an input conjunction $\varphi$:
+  \begin{itemize}
+    \item Call \Uf-solver on $\varphi$. If $unsat$ return $unsat$
+    \item Call \Lra-solver on $\varphi$
+  \end{itemize}
+  This can save many calls to \Lra-solver. Since \Uf-solver is quick, this can save time !
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Exercises}
+
+  \begin{enumerate}
+    \item Prove by induction the invariant on slide 9
+    \vfill
+    \item Write the precise pseudocode for Explain
+    \vfill
+    \item Is the following conjunction satisfiable ?
+          $$
+	    f(g(x))\!\not=\!f(y)\ \wedge\ x\!=\!w\ \wedge\ g(x)\!=\!h(z)\ \wedge\ z\!=\!x\ \wedge\ h(w)\!=\!y  
+	  $$
+    \vfill
+    \item Verify your anwser using an SMT-solver of your choice. In smtlib2 the above
+          can be written as
+	  \begin{verbatim}
+          (set-logic QF_UF)
+          (declare-sort U 0)
+          (declare-fun f ( U ) U)
+          ...
+          (declare-fun x ( ) U)
+          (assert (not (= (f (g x)) (f y))))
+          ...
+          (check-sat)
+	  \end{verbatim}
+  \end{enumerate}
+
+\end{frame}

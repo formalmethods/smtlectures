@@ -1,0 +1,44 @@
+\subsection{Introduction}
+
+\begin{frame}
+  \frametitle{Integer Difference Logics (\Idl)}
+
+  The \tatoms of \Idl consists of arithmetic
+  constraints of the form
+  $$
+  x - y \leq c
+  $$
+  where $x, y$ are variables and $c$ is a numerical constant.
+  The domain of $x,y,c$ is that of the integers
+  \vfill
+  \pause
+  Notice that the following translations hold
+  \begin{itemize}
+    \item $x - y \geq c  \quad\quad\Longrightarrow\quad\quad  y - x \leq -c$  
+    \item $x - y < c     \quad\quad\Longrightarrow\quad\quad  x - y \leq  c-1$  
+    \item $x - y > c     \quad\quad\Longrightarrow\quad\quad  y - x \leq -c-1$  
+    \item $x - y = c     \quad\quad\Longrightarrow\quad\quad (x - y \leq c) \wedge (x - y \geq c)$  
+    \item $x - y \not= c \quad\quad\Longrightarrow\quad\quad (x - y < c)    \vee   (x - y > c)$  
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Integer Difference Logic (\Idl)}
+  
+  \Rdl is similar to \Idl, but it is defined on the rationals. However
+  an \Rdl formula can be reduced to an equisatisfiable \Idl formula 
+  \vfill
+  \pause 
+  \Idl/\Rdl can be used to encode a large variety of verification probems
+  \begin{itemize}
+    \item scheduling
+    \item TSP
+    \item ASP
+    \item timed-automata
+    \item sorting algorithms
+  \end{itemize}
+  \vfill
+  Also, the worst-case complexity of solving a conjunction of \Idl constraints is $O(m + n \log n)$
+
+\end{frame}

@@ -1,0 +1,210 @@
+\section{Lecture 4 - The Lazy Approach}
+
+\begin{frame}
+  \frametitle{The Lazy Approach}
+
+  \scriptsize
+
+  Notice that
+  \begin{itemize}
+    \item Assignments $\mu$ of $\varphi$ are many (potentially $\infty$),
+          infeasible to check if any of them is a model {\bf systematically}
+    \item Models $\babst{\mu}$ of $\babst{\varphi}$ are finite in number,
+          and easy to enumerate with a SAT-solver
+    \item A model $\babst{\mu}$ is nothing but a {\bf conjunction of \tatoms},
+          can be checked efficiently with a \tsolver
+  \end{itemize}
+  \vfill
+  These observations suggest us a methodology
+  to tackle the SMT(\T) problem
+  \begin{itemize}
+    \item Enumerate a Boolean model $\babst{\mu}$ of $\babst{\varphi}$ (abstraction). If no model 
+	  exist we are done ($\varphi$ is unsatisfiable) 
+    \item Check if $\babst{\mu}$ is satisfiable using the \tsolver. If so $\babst{\mu}$ can be extended 
+          to a model $\mu$ of $\varphi$, and so we are done ! ($\varphi$ is satisfiable) 
+    \item It not, we tell the SAT-solver not to enumerate $\babst{\mu}$ again,
+          thus {\bf cutting away systematically an infinite number} 
+	  of assignments for $\varphi$ (refinement) 
+    \item It can be blocked by adding a clause $\neg \babst{\mu}$. Go up
+    \item It terminates because there are finite Boolean models
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Lazy Approach}
+
+  \scriptsize
+  
+  The lazy approach falls into the so-called {\bf abstraction-refinement} 
+  paradigm
+  \vfill
+  \begin{center}
+  \scalebox{.5}{\input{ar.pdf_t}}
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Lazy Approach}
+
+  \scriptsize
+
+  The interaction described naturally falls within the
+  CDCL style, enriched with a \tsolver
+      $$\varphi \equiv 
+      (x=3 \vee \neg (x<3))\ \swedge\
+      (x=3 \vee \neg (x>3))\ \swedge\
+      (x>3 \vee \neg (x<3))\ \swedge\
+      (x>3 \vee \neg (x=3))$$ 
+  \vfill
+  \begin{columns}
+
+    \begin{column}{.5cm}
+      \vspace{-165pt}
+      $\babst{\varphi} \equiv$
+    \end{column}
+
+    \begin{column}{5cm}
+      $(\coltwoat{\coloneat{a_1}{8-13}}{2-6} \vee \coltwoat{\neg a_2}{9-13})$ \\
+      $(\coltwoat{\coloneat{a_1}{8-13}}{2-6} \vee \coltwoat{\coloneat{\neg a_3}{3-6}}{10-13})$ \\
+      $(\coloneat{\coltwoat{a_3}{3-6}}{10-13} \vee \coltwoat{\neg a_2}{9-13})$ \\
+      $(\coloneat{\coltwoat{a_3}{3-6}}{10-13} \vee \coloneat{\coltwoat{\neg a_1}{8-13}}{2-6})$ \\
+      \onslide<6->{$(\coloneat{\coltwoat{\neg a_1}{10-13}}{6} \vee \coltwoat{\coloneat{\neg a_3}{6}}{10-13})$ \\}
+      \onslide<7->{$(\coltwoat{\neg a_1}{8-13})$ \\}
+      \onslide<13->{$(\coloneat{a_1}{13} \vee \coloneat{a_2}{13} \vee \coloneat{a_3}{13})$ \\}
+      \onslide<14->{$(\ )$ \\}
+      \bigskip
+      $a_1 \equiv x=3$ \\
+      $a_2 \equiv x<3$ \\
+      $a_3 \equiv x>3$ \\
+      \bigskip
+      $\babst{\mu}$: $\{\ \only<2-6|handout:0>{a_1}\only<3-6|handout:0>{, a_3}\only<8-13|handout:0>{\neg a_1}\only<9-13|handout:0>{, \neg a_2}\only<10-13|handout:0>{, \neg a_3}\ \}$ \\
+      \bigskip
+      \begin{tabular}{rl}
+      SAT-solver: & \only<1,4-5,11-12|handout:0>{Idle}\only<2|handout:0>{Decision}\only<3,8-10|handout:0>{BCP}\only<6,13|handout:0>{Learn}\only<7,14|handout:0>{Conf. Analysis, Backtrack}\only<15>{UNS} \\
+        \tsolver: & \only<1,2,3,6-10,13->{Idle}\only<4,5,11,12|handout:0>{Is $\babst{\mu}$ \T-satisfiable ?}\only<5,12|handout:0>{ NO}
+      \end{tabular}
+    \end{column}
+
+    \begin{column}{5cm}
+      \begin{overlayarea}{5cm}{5cm}
+	\only<1|handout:0>{\scalebox{.6}{\input{search_0.pdf_t}}}
+	\only<2|handout:0>{\scalebox{.6}{\input{search_1.pdf_t}}}
+	\only<3,4,5|handout:0>{\scalebox{.6}{\input{search_2.pdf_t}}}
+	\only<6,7|handout:0>{\scalebox{.6}{\input{search_3.pdf_t}}}
+	\only<8|handout:0>{\scalebox{.6}{\input{search_4.pdf_t}}}
+	\only<9|handout:0>{\scalebox{.6}{\input{search_5.pdf_t}}}
+	\only<10-12|handout:0>{\scalebox{.6}{\input{search_6.pdf_t}}}
+	\only<13->{\scalebox{.6}{\input{search_7.pdf_t}}}
+      \end{overlayarea}
+    \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lecture 4 - Exercize 1}
+
+  \scriptsize
+
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+     $$
+     \begin{array}{l}
+     (a_1 \vee \neg a_2) \\
+     (a_1 \vee \neg a_3) \\
+     (a_3 \vee \neg a_2) \\
+     (a_3 \vee \neg a_1) \\
+     (\neg a_1 \vee \neg a_3)
+     \end{array}
+     $$
+    \end{minipage}
+    & ~~~~~~ &
+    \begin{minipage}{.4\textwidth}
+      \begin{tabular}{ccl}
+	\hline
+	Trail & dl & Reason \\
+	\hline
+	$a_1$ & 1 & Decision \\
+	$a_3$ & 1 & $(a_3 \vee \neg a_1)$ \\
+	\hline
+      \end{tabular}
+      \bigskip \\
+      $\{ \dec{a_1}{1}, \dec{a_3}{1} \}$
+    \end{minipage}
+  \end{tabular}
+
+  \vfill
+  \pause
+
+  \begin{minipage}{\textwidth}
+    \begin{prooftree}
+    \AxiomC{$(\neg a_1 \vee \neg a_3)$}
+    \AxiomC{$( a_3 \vee \neg a_1 )$}
+    \BinaryInfC{$(\neg a_1)$}
+    \end{prooftree}
+  \end{minipage}
+
+  \vfill
+  \pause
+  Conflict clause: $(\neg a_1)$ \pause \\
+  Backtracking level: 0
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lecture 4 - Exercize 1}
+
+  \scriptsize
+
+  \begin{tabular}{ccc}
+    \begin{minipage}{.4\textwidth}
+     $$
+     \begin{array}{l}
+     (a_1 \vee \neg a_2) \\
+     (a_1 \vee \neg a_3) \\
+     (a_3 \vee \neg a_2) \\
+     (a_3 \vee \neg a_1) \\
+     (\neg a_1 \vee \neg a_3) \\
+     (\neg a_1) \\
+     (a_1 \vee a_2 \vee a_3)
+     \end{array}
+     $$
+    \end{minipage}
+    & ~~~~~~ &
+    \begin{minipage}{.4\textwidth}
+      \begin{tabular}{ccl}
+	\hline
+	Trail & dl & Reason \\
+	\hline
+	$\neg a_1$ & 0 & $(\neg a_1)$ \\
+	$\neg a_2$ & 0 & $(a_1 \vee \neg a_2)$ \\
+	$\neg a_3$ & 0 & $(a_1 \vee \neg a_3)$ \\
+	\hline
+      \end{tabular}
+      \bigskip \\
+      $\{ \neg \dec{a_1}{0}, \neg \dec{a_2}{0}, \neg \dec{a_3}{0} \}$
+    \end{minipage}
+  \end{tabular}
+
+  \vfill
+  \pause
+
+  \begin{minipage}{\textwidth}
+    \begin{prooftree}
+    \AxiomC{$(a_1 \vee a_2 \vee a_3)$}
+    \AxiomC{$(a_3 \vee \neg a_1)$}
+    \BinaryInfC{$(a_1 \vee a_2)$}
+    \AxiomC{$(a_1 \vee \neg a_2)$}
+    \BinaryInfC{$(a_1)$}
+    \AxiomC{$(\neg a_1)$}
+    \BinaryInfC{$\bot$}
+    \end{prooftree}
+  \end{minipage}
+
+  \vfill
+  \pause
+  Conflict clause: $\bot$ \pause \\
+  Backtracking level: 0
+\end{frame}

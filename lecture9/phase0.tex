@@ -1,0 +1,24 @@
+\begin{frame}[fragile]
+  \frametitle{Phase 0 - Compiling \opensmt for the first time}
+
+  \begin{verbatim}
+
+    $ autoreconf --install [--force]
+
+
+    $ mkdir debug
+
+
+    $ cd debug
+
+
+    debug $ ../configure --disable-optimization 
+                         [--with-gmp=/opt/local]
+
+
+    debug $ make [-j4]
+    debug $ cd ..
+
+  \end{verbatim}
+
+\end{frame}

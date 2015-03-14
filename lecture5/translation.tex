@@ -1,0 +1,120 @@
+\subsection{Translation into a Graph}
+
+\begin{frame}
+  \frametitle{Translation into a Graph}
+
+  \scriptsize
+
+  The constraint $\quad x - y \leq c \quad$ says that 
+  
+  \begin{center}
+    ``the distance between $x$ and $y$ is at most $c$''
+  \end{center}
+
+  This can be encoded as $(x,y;c)$
+
+  \begin{center}
+    \input{arc}
+  \end{center}
+
+  \pause
+  \vfill
+  So, a set $\babst{\mu}$ can be encoded as a graph. Concrete example:
+
+  \begin{columns}
+
+    \begin{column}{.3\textwidth}
+      \ra{1.3}
+      $$
+      \begin{array}{rcr}
+	x - y & \leq & 8   \\
+	y - z & \leq & -1  \\
+	z - x & \leq & -6  \\
+	z - w & \leq & 2   \\
+	w - x & \leq & -10 \\
+	w - t & \leq & 0   \\
+	t - x & \leq & 3     
+      \end{array}
+      $$
+    \end{column}
+
+    \begin{column}{.6\textwidth}
+      \begin{center}
+	\input{example}
+      \end{center}
+    \end{column}
+
+  \end{columns}
+  \vfill
+  $G( V, E )$: $V = \{ x, y, z, w, t \}$, $E = \{ (x,y;8), (y,z;-1), (z,x;-6), (z,w;2), (w,x;-10), \ldots \}$ 
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Translation into a Graph}
+
+  \scriptsize
+
+    \begin{theorem}[Translation]
+      \label{the:idl}
+      $\babst{\mu}$ is \Idl-unsatisfiable 
+      \begin{center}
+      iff
+      \end{center}
+      there is a {\bf negative cycle} in the corresponging graph $G(V,E)$
+    \end{theorem}
+
+  \pause
+  \vfill
+  E.g.:
+
+  \begin{columns}
+
+    \begin{column}{.3\textwidth}
+      \ra{1.3}
+      $$
+      \begin{array}{rcr}
+	\coloneat{x - y}{3-} & \coloneat{\leq}{3-} & \coloneat{8}{3-}   \\
+	\coloneat{y - z}{3-} & \coloneat{\leq}{3-} & \coloneat{-1}{3-}  \\
+	\colfouat{z - x}{3-} & \colfouat{\leq}{3-} & \colfouat{-6}{3-}  \\
+	\coloneat{z - w}{3-} & \coloneat{\leq}{3-} & \coloneat{2}{3-}   \\
+	\coloneat{w - x}{3-} & \coloneat{\leq}{3-} & \coloneat{-10}{3-} \\
+	\colfouat{w - t}{3-} & \colfouat{\leq}{3-} & \colfouat{0}{3-}   \\
+	\colfouat{t - x}{3-} & \colfouat{\leq}{3-} & \colfouat{3}{3-}     
+      \end{array}
+      $$
+    \end{column}
+
+    \begin{column}{.6\textwidth}
+      \begin{center}
+	\begin{overlayarea}{.5\textwidth}{3cm}
+	  \only<2|handout:0>{\input{example}}
+	  \only<3->{\input{example_hl}}
+	\end{overlayarea}
+      \end{center}
+    \end{column}
+
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Translation into a Graph}
+
+  We use the following lemma to aid the proof
+
+  \begin{lemma}[Farka's Lemma for \Idl]
+    $\babst{\mu}$ is unsatisfiable iff there exists a subset 
+    $\babst{\nu} = \{\ \coltwo{x_1} - x_2 \leq c_1,\ x_2 - x_3 \leq c_2,\ \ldots,\ x_n - \coltwo{x_1} \leq c_n\ \}$ of $\babst{\mu}$
+    such that $c_1 + \ldots + c_n < 0$
+  \end{lemma}
+  \pause
+  \vfill
+  The proof of Theorem is now trivial
+  \begin{proof}
+  $\babst{\mu}$ is unsatisfiable iff \colfou{by Farka's Lemma for \Idl} \\
+  there exists $\babst{\nu} \subseteq \babst{\mu}$ with $c_1 + \ldots + c_n < 0$ iff \colfou{by our translation} \\
+  there exists a negative cycle in $G(V,E)$
+  \end{proof}
+
+\end{frame}

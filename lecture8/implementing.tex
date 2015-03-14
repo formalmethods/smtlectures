@@ -1,0 +1,220 @@
+\subsection{Implementing a Model-Checker}
+
+\begin{frame}
+  \frametitle{Implementing a Model-Checker}
+
+  In order to implement model-checker we need: 
+  \begin{enumerate}
+    \item representing large sets of states
+    \item computing $T(S^{(i)})$
+    \item check if bad states are in $S^{(i)}$ 
+    \item check if $S^{(i)} \equiv S^{(i+1)}$ 
+  \end{enumerate}
+  \vfill\pause
+  The naive way would be to represent states {\bf explicitly} 
+  (e.g., with a C {\tt struct} containing values for state variables)
+  \vfill
+  Very few model-checkers adopt this method (e.g., SPIN)
+  \vfill\pause
+  A more powerful approach represents 
+  states {\bf symbolically}, 
+  by means of SAT/SMT-formul\ae: each set of
+  states $S$ is represented by a formula $\phi$ such
+  that $S$ corresponds to the models of $\phi$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Symbolic Model-Checking - Representing States}
+
+  \scriptsize
+
+  Examples:
+  \medskip\\
+  \begin{tabular}{ccc}
+
+    \begin{minipage}{.4\textwidth}
+      \input{symb_1}
+    \end{minipage}
+    &~ &
+    door\_open $\wedge$ engine\_on $\wedge$ $\neg$ tray\_full \\
+    \pause
+    \\
+
+    \begin{minipage}{.4\textwidth}
+      \input{symb_2}
+    \end{minipage}
+    &~ &
+    $\neg$ door\_open $\wedge$ engine\_on $\wedge$ $\neg$ tray\_full \\
+    \pause
+    \\
+
+    \begin{minipage}{.4\textwidth}
+      \input{symb_3}
+    \end{minipage}
+    &~ &
+    engine\_on $\wedge$ $\neg$ tray\_full \\
+
+  \end{tabular}
+  \vfill\pause
+  Also, it is easy to see that:
+  \medskip\\
+  \begin{tabular}{ccc}
+    $S_1 \cup S_2$ & & $\phi_1 \vee \phi_2$ \\
+    $S_1 \cap S_2$ & & $\phi_1 \wedge \phi_2$ \\
+    $S_1 \subseteq S_2$ & & $\phi_1 \rightarrow \phi_2$ 
+  \end{tabular}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Symbolic Model-Checking - Representing Transitions}
+
+  \scriptsize
+
+  Transitions are also represented as formul\ae\xspace between state
+  variables and their primed versions 
+  \vfill
+  \begin{tabular}{llllcl}
+    \multirow{2}{*}{if} & door=closed & \multirow{2}{*}{then} & tray'=empty & & \multirow{2}{*}{[start\_washing]} \\ 
+                        & engine=off  &                       & engine'=on  & &                                   \\
+  \end{tabular}
+  \vfill
+  $$
+    \neg \mbox{door\_open} \wedge \neg \mbox{engine\_on} \wedge \neg \mbox{door\_open'} \wedge \mbox{engine\_on'} \wedge \neg \mbox{tray\_full'}
+  $$
+  \vfill\pause
+  This formula says that the following pair of states are related
+  $$
+  \begin{array}{rcl}
+    \neg \mbox{door\_open} \wedge \neg \mbox{engine\_on} \wedge \neg \mbox{tray\_full} 
+    & ~~~ & \neg \mbox{door\_open'} \wedge \mbox{engine\_on'} \wedge \neg \mbox{tray\_full'} \\
+    \\
+    \neg \mbox{door\_open} \wedge \neg \mbox{engine\_on} \wedge \mbox{tray\_full} 
+    & ~~~ & \neg \mbox{door\_open'} \wedge \mbox{engine\_on'} \wedge \neg \mbox{tray\_full'} 
+  \end{array}
+  $$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Symbolic Model-Checking - Computing Next State}
+
+  \scriptsize
+
+  From a set of states $S^{(i)}$, represented symbolically by a formula $\phi( \vec{s} )$,
+  and a transition $t_j$, represented symbolically by a formula $\psi( \vec{s}, \vec{s'} )$,
+  the next states $t_j(S^{(i)})$ can be expressed as
+  $$
+  \exists \vec{s}.\ \phi( \vec{s} ) \wedge \psi( \vec{s}, \vec{s'} )
+  $$
+  By means of an operation called {\bf quantifier elimination}, we can remove $\vec{s}$.
+  If then we rename $\vec{s'}$ as $\vec{s}$ we obtain the symbolic representation of $t_j(S^{(i)})$
+  \vfill\pause
+  Example:
+  $$
+  \begin{array}{l}
+    \phi \equiv \neg \mbox{door\_open} \wedge \neg \mbox{engine\_on} \\
+    \psi \equiv \neg \mbox{door\_open} \wedge \neg \mbox{engine\_on} \wedge 
+                \neg \mbox{door\_open'} \wedge \mbox{engine\_on'} \wedge \neg \mbox{tray\_full'} \\
+  \end{array}
+  $$
+  Quantifier elimination of $\exists \mbox{ door\_open}, \mbox{engine\_on}.\ \phi \wedge \psi$ is
+  $$
+    \neg \mbox{door\_open'} \wedge \mbox{engine\_on'} \wedge \neg \mbox{tray\_full'} 
+  $$
+  and therefore
+  $$
+    \neg \mbox{door\_open} \wedge \mbox{engine\_on} \wedge \neg \mbox{tray\_full} 
+  $$
+  is $t_j(S^{(i)})$. The whole set of next states $T(S^{(i)})$ is 
+  $\bigvee_j t_j( S^{(i)} )$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Symbolic Model-Checking - Bad states in $S^{(i)}$}
+
+  Suppose that $\phi$ is the symbolic representation of $S^{(i)}$,
+  and that $\beta$ is the symbolic representation of the {\bf bad states}
+  \vfill
+  checking if some bad state is in $S^{(i)}$ can be simply done with\pause
+  $$
+    \phi \wedge \beta \mbox{ is satisfiable ?}
+  $$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Symbolic Model-Checking - Fix point test}
+
+  Suppose that $\phi_i$ is the symbolic representation of $S^{(i)}$
+  and that $\phi_{i+1}$ is the symbolic representation of $S^{(i+1)}$
+  how do I that $S^{(i)} \equiv S^{(i+1)}$ ?
+  \vfill\pause
+  First of all, notice that $S^{(i)} \equiv S^{(i+1)}$ if and only if
+  $$
+    S^{(i)} \subseteq S^{(i+1)} \mbox{ and } S^{(i+1)} \subseteq S^{(i)}
+  $$
+  \vfill\pause
+  $S^{(i)} \subseteq S^{(i+1)}$ always holds (explored states grow monotonically)
+  \vfill\pause
+  $S^{(i+1)} \subseteq S^{(i)}$ can be perfomed with the following check
+  $$
+  \begin{array}{l}
+    \phi_{i+1} \rightarrow \phi_i \mbox{ is a tautology ? or equivalently} \\
+    \phi_{i+1} \wedge \neg \phi_i \mbox{ is unsafisfiable ? } 
+  \end{array}
+  $$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Symbolic Model-Checking - Summary}
+
+  Model-Checking can be implemented by representing
+  states and transitions symbolically with SAT/SMT-formul\ae
+  \vfill
+  Next states $T(S^{(i)})$ can be computed using quantifier elimination
+  \vfill
+  Presence of bad states can be computed with a satisfiability call of
+  the form $\phi \wedge \beta$
+  \vfill
+  Fix-point check can be computed with a satisfiability call of the
+  form $\phi_{i+1} \wedge \neg \phi_i$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Symbolic Model-Checking - Termination}
+
+  \begin{boxedminipage}{\textwidth}
+  \begin{center}
+  Forward-Reachability
+  \begin{tabular}{rcl}
+     \\
+       {\bf Safety Check} & ~~ & If $\phi_i \wedge \beta$ is satisfiable, return {\bf unsafe} \\
+        {\bf Next States} & ~~ & Compute $\phi_{i+1}$ with quantifier elimination \\
+    {\bf Fix-Point Check} & ~~ & If $\phi_{i+1} \wedge \neg \phi_i$ is unsatisfiable, return {\bf safe} 
+  \end{tabular}
+  \end{center}
+  \end{boxedminipage}
+  \vfill
+  Model-Checking always terminates if the satisfiability
+  tests above terminates
+  \begin{itemize}
+
+    \item If the system under inspection 
+	  is a {\bf finite state machine}, everything can be encoded
+	  into Booleans, and so they always terminate (SAT-solver is enough)
+
+    \item If the system has {\bf infinite states} (e.g., $0 \leq x \wedge y \geq 2$), 
+	  it terminates if everyting can be encoded into a decidable SMT theory
+	  (e.g., \Lia) (SMT-Solver necessary)
+
+    \item If quantifiers are needed to express states, then Forward-Reachability
+          might not terminate (SMT-Solver plus clever way of handling quantifiers)
+
+  \end{itemize}
+
+\end{frame}

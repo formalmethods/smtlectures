@@ -1,0 +1,81 @@
+\subsection{\smtsolvers}
+
+\begin{frame}[fragile]
+  \frametitle{\smtsolvers}
+
+  An \smtsolver is a tool that can parse and solve an SMT-LIB
+  benchmark.
+  \vfill
+  \pause
+  There are many such tools available online. In this course
+  we will use \yices (developed at SRI, Stanford, closed source), \zthree 
+  (developed at MSR, Redmond, closed source) and \opensmt (developed here, open source). \pause
+  Other available tools are \mathsat, \cvcfour, \boolector, \verit, \stp.
+  \vfill
+  \pause
+  {\scriptsize
+  \begin{verbatim}
+    roberto@moriarty:examples$ smtlib2yices < test1.smt2 
+    success
+    success
+    success
+    success
+    success
+    success
+    success
+    success
+    sat
+  \end{verbatim}  
+  }
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{SMT-LIB script}
+
+  The SMT-LIB language allows specification of {\bf scripts}. A script
+  is a benchmark that may contain many {\tt check-sat} commands. Also, 
+  it may include {\tt push} and {\tt pop} commands which
+  can be used to control the assertion stack
+
+  {\scriptsize
+  \begin{verbatim}
+    (set-option :print-success false)
+    (set-logic QF_LIA)
+    (declare-fun x ( ) Int)
+    (declare-fun y ( ) Int)
+    (assert (<= (+ x y) 0))
+    (assert (= x 0))
+    (assert (or (= x 1) (>= y 0)))
+    (check-sat)
+    (push 1)
+    (assert (not (= y 0)))
+    (check-sat)
+    (pop 1)
+    (check-sat)
+    (exit)
+  \end{verbatim} 
+  }
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exercizes}
+
+  \begin{enumerate}
+    \item Translate the following \Lia formula SMT-LIB, and evaluate it with an \smtsolver
+    $$(x - y \leq 0) \wedge (y - z \leq 0) \wedge ((z - x \leq -1) \vee (z - x \leq -2))$$
+    \vfill
+
+    \item Translate the following \Lra formula SMT-LIB, and evaluate it with an \smtsolver
+    $$(b \vee (x + y \leq 0)) \wedge (\neg b \vee (x + z \leq 10))$$
+    \vfill
+
+    \item For the satisfiable \formulae above print out a model
+    \vfill
+
+    \item For the satisfiable \formulae above, add constraints such that they become unsatisfiable
+
+  \end{enumerate}
+
+\end{frame}

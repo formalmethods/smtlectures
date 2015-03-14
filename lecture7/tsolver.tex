@@ -1,0 +1,31 @@
+\begin{frame}
+  \frametitle{\tsolver features}
+
+  \begin{itemize}
+
+  \item Incrementality: for free, as Congruence-Closure is already incremental
+
+  \vfill\pause
+
+  \item Backtrackability: backtracking one equality amounts to {\bf undo} 
+                          all the operations done during Congruence-Closure.
+			  (This means that backtracking is as expensive as
+			  solving)
+
+  \vfill\pause
+
+  \item Minimal \tconflicts: computing minimal conflicts in \Uf is theoretically
+                             very hard (NP-complete). We'll an acceptable way to
+			     compute them
+
+  \vfill\pause
+
+  \item Theory-Propagation: it amounts to track all unassigned equalities such
+                            as $a=b$. If during some Union( $x$, $y$ ), $a$ 
+			    and $b$ become equal (because for instance 
+			    $a$ is in the class of $x$ and $b$ is in the class
+			    of $y$), then propagate $a=b$
+
+  \end{itemize}
+
+\end{frame}
